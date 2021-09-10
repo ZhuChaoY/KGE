@@ -3,7 +3,7 @@ Knowledge Graph Embedding Models
 
 # Files
 ### dataset/
-FB15k (larger than 25MB, first unzip the file)
+FB15k (larger than 25MB, first unzip the file)  
 FB15k-237  
 WN18  
 WN18RR  
