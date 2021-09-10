@@ -1,5 +1,5 @@
 # KGE
-Knowledge Graph Embedding Models
+A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, TransR, TransD, ConvKB now, keep expanding)
 
 # Files
 ### dataset/
