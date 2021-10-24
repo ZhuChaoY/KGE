@@ -10,7 +10,7 @@ WN18RR
 
 **KGE.py** : Class of processing and tool functions for Knowledge Graph Embedding.  
 **Models.py** : TransE, TransH, TransR, TransD, ConvKB structure.  
-**Run_KGE.py** : Train KGE model.  
+**Run_KGE.py** : Train and Predict KGE model.  
 
 # Operating Instructions
 Run Run_KGE.py to train TransE, TransH, TransR, TransD, ConvKB.  
