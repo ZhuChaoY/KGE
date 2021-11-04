@@ -1,16 +1,12 @@
 # KGE
 A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, TransR, TransD, ConvKB now, keep expanding)
 
-## Files
-### dataset/
-FB15k (larger than 25MB, first unzip the file)  
-FB15k-237  
-WN18  
-WN18RR  
-
-**KGE.py** : Class of processing and tool functions for Knowledge Graph Embedding.  
-**Models.py** : TransE, TransH, TransR, TransD, ConvKB structure.  
-**Run_KGE.py** : Train and Predict KGE model.  
+## Reference
+(1) TransE: Translating Embeddings for Modeling Multi-relational Data   
+(2) TransH: Knowledge Graph Embedding by Translating on Hyperplanes  
+(3) TransR: Learning Entity and Relation Embeddings for Knowledge Graph Completion  
+(4) TransD: Knowledge Graph Embedding via Dynamic Mapping Matrix  
+(5) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network  
 
 ## Operating Instructions
 Run Run_KGE.py to train TransE, TransH, TransR, TransD, ConvKB.  
