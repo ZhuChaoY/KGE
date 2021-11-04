@@ -1,7 +1,7 @@
 # KGE
 A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, TransR, TransD, ConvKB now, keep expanding)
 
-# Files
+##Files
 ### dataset/
 FB15k (larger than 25MB, first unzip the file)  
 FB15k-237  
@@ -12,7 +12,7 @@ WN18RR
 **Models.py** : TransE, TransH, TransR, TransD, ConvKB structure.  
 **Run_KGE.py** : Train and Predict KGE model.  
 
-# Operating Instructions
+## Operating Instructions
 Run Run_KGE.py to train TransE, TransH, TransR, TransD, ConvKB.  
 **TransX**:   
 ```
