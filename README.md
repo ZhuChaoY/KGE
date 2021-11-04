@@ -21,3 +21,10 @@ python Run_KGE.py --model TransE --dataset FB15k --dim 128 --margin 1.0 --l_r 1e
 **ConvKB**:  
 ```
 python Run_KGE.py --model ConvKB --dataset FB15k --dim 128 --n_filter 8 --l_r 1e-4 --batch_size 1024 --epoches 100 --do_train True --do_predict True
+
+## Results       
+### FB15k
+|           | **MR** | **MRR** | **Hist@1** | **Hist@3** | **Hist@10** |
+|     --    |   --   |    --   |     --     |     --     |     --      |
+|**TransE** | 127.9  |  0.356  |   0.203    |   0.450    |    0.627    |  
+|**TransH** | **118.8**  |  0.375  |  0.229     |   0.462  |   0.635    |
