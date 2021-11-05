@@ -1,5 +1,5 @@
 # KGE
-A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, TransR, TransD, ConvKB now, keep expanding)
+A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, TransR, TransD, ConvKB now, keep expanding) by tensorflow.
 
 ## Reference
 (1) TransE: Translating Embeddings for Modeling Multi-relational Data   
