@@ -22,14 +22,7 @@ class TransE(KGE):
         score_neg = tf.reduce_sum(s_neg ** 2, 1)
         
         return score_pos, score_neg
-        
-    
-    def cal_loss(self):
-        loss = tf.reduce_sum(tf.nn.relu(self.margin + self.score_pos - \
-                                        self.score_neg))
-        
-        return loss
-    
+
             
 
 class TransH(KGE):
@@ -48,7 +41,7 @@ class TransH(KGE):
         p_pos = tf.gather(P_table, self.T_pos[:, 1])
         p_neg = tf.gather(P_table, self.T_neg[:, 1])
         
-        self.l2_loss = tf.sqrt(tf.reduce_sum(P_table ** 2))
+        self.l2_v.append(P_table)
         
         h_pos = projector(h_pos, p_pos)
         t_pos = projector(t_pos, p_pos)
@@ -66,13 +59,6 @@ class TransH(KGE):
         score_neg = tf.reduce_sum(s_neg ** 2, 1)
         
         return score_pos, score_neg
-        
-    
-    def cal_loss(self):
-        loss = tf.reduce_sum(tf.nn.relu(self.margin + self.score_pos - \
-               self.score_neg)) + 0.001 / 2 * self.l2_loss
-        
-        return loss
     
                  
           
@@ -92,7 +78,7 @@ class TransR(KGE):
         p_pos = tf.gather(P_table, self.T_pos[:, 1])
         p_neg = tf.gather(P_table, self.T_neg[:, 1])
         
-        self.l2_loss = tf.sqrt(tf.reduce_sum(P_table ** 2))
+        self.l2_v.append(P_table)
         
         h_pos = tf.matmul(h_pos, p_pos) 
         t_pos = tf.matmul(t_pos, p_pos)
@@ -110,14 +96,7 @@ class TransR(KGE):
         score_neg = tf.reduce_sum(s_neg ** 2, [1, 2])
         
         return score_pos, score_neg
-        
-    
-    def cal_loss(self):
-        loss = tf.reduce_sum(tf.nn.relu(self.margin + self.score_pos - \
-               self.score_neg)) + 0.001 / 2 * self.l2_loss
-        
-        return loss
-    
+
     
 
 class TransD(KGE):
@@ -144,8 +123,7 @@ class TransD(KGE):
         p_r_pos = tf.gather(P_R_table, self.T_pos[:, 1])
         p_r_neg = tf.gather(P_R_table, self.T_neg[:, 1])
         
-        self.l2_loss = tf.sqrt(tf.reduce_sum(P_E_table ** 2)) + \
-                       tf.sqrt(tf.reduce_sum(P_R_table ** 2))
+        self.l2_v.extend([P_E_table, P_R_table]) 
         
         h_pos = projector(h_pos, p_h_pos, p_r_pos)
         t_pos = projector(t_pos, p_t_pos, p_r_pos)
@@ -163,13 +141,6 @@ class TransD(KGE):
         score_neg = tf.reduce_sum(s_neg ** 2, 1)
         
         return score_pos, score_neg
-        
-    
-    def cal_loss(self):
-        loss = tf.reduce_sum(tf.nn.relu(self.margin + self.score_pos - \
-               self.score_neg)) + 0.001 / 2 * self.l2_loss
-        
-        return loss
     
                         
     
@@ -208,15 +179,7 @@ class ConvKB(KGE):
                                [-1, self.dim * self.n_filter])), w))
         score_neg = tf.squeeze(tf.matmul(tf.nn.relu(tf.reshape(s_neg,
                                [-1, self.dim * self.n_filter])), w))
-        self.l2_loss = tf.sqrt(tf.reduce_sum(w ** 2))
+        self.l2_v.append(w) 
         
         return score_pos, score_neg
-        
-    
-    def cal_loss(self):
-        loss = tf.reduce_sum(tf.nn.softplus(self.score_pos) + \
-                             tf.nn.softplus(- self.score_neg)) + \
-               0.001 / 2 * self.l2_loss
-        
-        return loss
     

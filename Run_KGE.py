@@ -13,16 +13,20 @@ parser.add_argument('--dataset', type = str, default = 'FB15k',
                     help = 'dataset name') 
 parser.add_argument('--dim', type = int, default = 128,
                     help = 'embedding dimension')
-parser.add_argument('--margin', type = float, default = 0.5,
+parser.add_argument('--margin', type = float, default = 1.0,
                     help = 'margin value for TransX')
 parser.add_argument('--n_filter', type = int, default = None,
                     help = 'number of filters for ConvKB')
+parser.add_argument('--l2', type = float, default = 5e-4,
+                    help = 'l2 penalty coefficient')
 parser.add_argument('--l_r', type = float, default = 1e-3, 
                     help = 'learning rate')
 parser.add_argument('--batch_size', type = int, default = 1024,
                     help = 'batch size for SGD')
 parser.add_argument('--epoches', type = int, default = 400,
                     help = 'training epoches')
+parser.add_argument('--earlystop', type = int, default = 2,
+                    help = 'earlystop steps')
 parser.add_argument('--do_train', type = bool, default = True,
                     help = 'whether to train')
 parser.add_argument('--do_predict', type = bool, default = True,
@@ -32,8 +36,7 @@ parser.add_argument('--do_predict', type = bool, default = True,
 args = parser.parse_args()
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' #shielding warning
-os.environ['CUDA_VISIBLE_DEVICES'] = '1' #GPU number
-
+os.environ['CUDA_VISIBLE_DEVICES'] = '0' #GPU number
 
 config = tf.ConfigProto() 
 config.gpu_options.allow_growth = True 

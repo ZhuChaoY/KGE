@@ -29,8 +29,7 @@ class KGE():
             'do_predict' : whether to predict for test dataset.
         (2) Named data dir and out dir.
         (3) Load entity, relation and triple.
-        (4) Load model structure.
-        (5) Initialize embedding trainable variables.
+        (4) Load common model structure.
         """
                 
         self.args = dict(args._get_kwargs())
@@ -59,8 +58,7 @@ class KGE():
     def em_data(self):
         """
         (1) Get entity mapping dict (E_dict).
-        (2) Get relation mapping dict (R_dict), and the index for activate 
-            and inhibit.
+        (2) Get relation mapping dict (R_dict).
         (3) Get train, dev and test dataset for embedding.
         (4) Get replace_h_prob dict and triple pool for negative 
             sample's generation.
@@ -92,7 +90,7 @@ class KGE():
                   key.title(), n_T, len(set(T[:, 0]) | set(T[:, 2])),
                   len(set(T[:, 1]))))
                             
-        rpc_h_prob = {} #'Bernoulli Trick'
+        rpc_h_prob = {} #Bernoulli Trick
         for r in range(self.n_R):
             idx = np.where(self.train[:, 1] == r)[0]
             t_per_h = len(idx) / len(set(self.train[idx, 0]))
@@ -107,20 +105,22 @@ class KGE():
     def common_structure(self):
         """The common structure of KGE model."""
         
-        print('\n    *Dim           : {}'.format(self.dim))
+        print('\n    *Dim             : {}'.format(self.dim))
         if self.model != 'ConvKB':
             if self.margin:
-                print('    *Margin        : {}'.format(self.margin))
+                print('    *Margin          : {}'.format(self.margin))
             else:
                 raise 'Lack margin value!'
         else:
             if self.n_filter:
-                print('    *N_filter      : {}'.format(self.n_filter))
+                print('    *N_filter        : {}'.format(self.n_filter))
             else:
                 raise 'Lack n_filter value!'
-        print('    *Learning_Rate : {}'.format(self.l_r))
-        print('    *Batch_Size    : {}'.format(self.batch_size))
-        print('    *Epoches       : {}'.format(self.epoches))
+        print('    *l2 Rate         : {}'.format(self.l2))
+        print('    *Learning_Rate   : {}'.format(self.l_r))
+        print('    *Batch_Size      : {}'.format(self.batch_size))
+        print('    *Epoches         : {}'.format(self.epoches))
+        print('    *Earlystop Steps : {}'.format(self.earlystop))
         
         tf.reset_default_graph()
         self.T_pos = tf.placeholder(tf.int32, [None, 3])
@@ -131,14 +131,12 @@ class KGE():
                       [self.n_E, self.dim], initializer = self.initializer), 1)
             R_table = tf.nn.l2_normalize(tf.get_variable('relation_table',
                       [self.n_R, self.dim], initializer = self.initializer), 1)
-            
             if self.model == 'TransR':
                 E_table = tf.reshape(E_table, [-1, 1, self.dim])
                 R_table = tf.reshape(R_table, [-1, 1, self.dim])
             elif self.model == 'ConvKB':
                 E_table = tf.reshape(E_table, [-1, self.dim, 1, 1])
                 R_table = tf.reshape(R_table, [-1, self.dim, 1, 1])
-                
             h_pos = tf.gather(E_table, self.T_pos[:, 0])
             r_pos = tf.gather(R_table, self.T_pos[:, 1])
             t_pos = tf.gather(E_table, self.T_pos[:, 2])
@@ -146,14 +144,25 @@ class KGE():
             r_neg = tf.gather(R_table, self.T_neg[:, 1])
             t_neg = tf.gather(E_table, self.T_neg[:, 2])
             
+            self.l2_v = []
             s_pos, s_neg = self.em_structure(h_pos, r_pos, t_pos,
-                                              h_neg, r_neg, t_neg)
+                                             h_neg, r_neg, t_neg)
             
         with tf.variable_scope('score'): #(B, 1)
             self.score_pos, self.score_neg = self.cal_score(s_pos, s_neg)
             
         with tf.variable_scope('loss'): #(1)
-            self.loss = self.cal_loss()
+            if self.model != 'ConvKB':
+                loss = tf.reduce_sum(tf.nn.relu(self.margin + \
+                       self.score_pos - self.score_neg))
+            else:
+                loss = tf.reduce_sum(tf.nn.softplus(self.score_pos) + \
+                             tf.nn.softplus(- self.score_neg))
+            if self.model != 'TransE':
+                l2_loss = tf.add_n([tf.nn.l2_loss(v) for v in self.l2_v])
+            else:
+                l2_loss = 0
+            self.loss = loss + self.l2 * l2_loss
             self.train_op = tf.train.AdamOptimizer(self.l_r). \
                             minimize(self.loss)
             
@@ -190,49 +199,47 @@ class KGE():
         """
 
         eps = self.epoches
-        bps = list(range(eps // 20 - 1, eps, eps // 20))
+        bps = list(range(eps // 25 - 1, eps, eps // 25))
         print('\n>>  Training Process. (Max to {} EPOCHES) '.format(eps))
         print('    EPOCH Trian-LOSS Dev-LOSS  time   Time')  
             
-        KPI = []
-        temp_kpi = None
+        temp_kpi, KPI = [], []
         t0 = t1 = time.time()
         for ep in range(eps):        
             train_batches = self.get_batches('train')
             train_Loss = 0.0
-            for T_pos in train_batches:     
-                T_neg = self.get_T_neg(T_pos)
+            for T_pos, T_neg in train_batches:     
                 feed_dict = {self.T_pos: T_pos, self.T_neg: T_neg}
                 loss, _ = sess.run([self.loss, self.train_op], feed_dict)
                 train_Loss += loss         
             train_Loss = round(train_Loss / self.n_train, 4)
-                
-            dev_batches = self.get_batches('dev')
-            dev_Loss = 0.0
-            for T_pos in dev_batches:     
-                T_neg = self.get_T_neg(T_pos)
-                feed_dict = {self.T_pos: T_pos, self.T_neg: T_neg}
-                loss = sess.run(self.loss, feed_dict)
-                dev_Loss += loss   
-            dev_Loss = round(dev_Loss / self.n_dev, 4)
       
             if ep in bps:
+                dev_batches = self.get_batches('dev')
+                dev_Loss = 0.0
+                for T_pos, T_neg in dev_batches:     
+                    feed_dict = {self.T_pos: T_pos, self.T_neg: T_neg}
+                    loss = sess.run(self.loss, feed_dict)
+                    dev_Loss += loss   
+                dev_Loss = round(dev_Loss / self.n_dev, 4)
+                
                 _t = time.time()
                 print('    {:^5} {:^10.4f} {:^8.4f} {:^6.2f} {:^6.2f}'. \
                       format(ep + 1, train_Loss, dev_Loss, (_t - t1) / 60,
                              (_t - t0) / 60))
                 t1 = _t
+                
                 if ep == bps[0] or dev_Loss < KPI[-1]:
                     tf.train.Saver().save(sess, self.out_dir + '/model.ckpt')
-                    if temp_kpi is not None:
-                        KPI.append(temp_kpi)
-                        temp_kpi = None
+                    if len(temp_kpi) > 0:
+                        KPI.extend(temp_kpi)
+                        temp_kpi = []
                     KPI.append(dev_Loss)
                 else:
-                    if temp_kpi is not None:
+                    if len(temp_kpi) == self.earlystop:
                         break
                     else:
-                        temp_kpi = dev_Loss
+                        temp_kpi.append(dev_Loss)
                     
         best_ep = bps[len(KPI) - 1] + 1
         if best_ep != eps:
@@ -257,10 +264,10 @@ class KGE():
         n = len(data)
         random.shuffle(data)                    
         n_batch = n // bs
-        batches = [data[i * bs: (i + 1) * bs] for i in range(n_batch)]
+        T_poss = [data[i * bs: (i + 1) * bs] for i in range(n_batch)]
         if n % bs != 0:
-            batches.append(data[n_batch * bs: ])
-        return batches  
+            T_poss.append(data[n_batch * bs: ])
+        return ((T_pos, self.get_T_neg(T_pos)) for T_pos in T_poss) 
     
     
     def get_T_neg(self, T_pos):
