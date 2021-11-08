@@ -47,7 +47,7 @@ class KGE():
             self.out_dir += str(self.n_filter)
         if not exists(self.out_dir):
             makedirs(self.out_dir)
-        self.initializer = tf.truncated_normal_initializer(stddev = 0.02)
+        self.K = np.sqrt(6.0 / self.dim)
         
         print('\n\n' + '==' * 4 + ' < {} > && < {} >'.format(self.model,
               self.dataset) + '==' * 4)        
@@ -124,29 +124,28 @@ class KGE():
         
         tf.reset_default_graph()
         self.T_pos = tf.placeholder(tf.int32, [None, 3])
-        self.T_neg = tf.placeholder(tf.int32, [None, 3])
+        self.T_neg = tf.placeholder(tf.int32, [None, 2])
         
         with tf.variable_scope('structure'): #(B, D)
-            E_table = tf.nn.l2_normalize(tf.get_variable('entity_table',
-                      [self.n_E, self.dim], initializer = self.initializer), 1)
-            R_table = tf.nn.l2_normalize(tf.get_variable('relation_table',
-                      [self.n_R, self.dim], initializer = self.initializer), 1)
+            E_table = tf.nn.l2_normalize(tf.get_variable('entity_table', initializer = \
+                      tf.random_uniform([self.n_E, self.dim], -self.K, self.K)), 1)
+            R_table = tf.nn.l2_normalize(tf.get_variable('relation_table', initializer = \
+                      tf.random_uniform([self.n_R, self.dim], -self.K, self.K)), 1)
             if self.model == 'TransR':
                 E_table = tf.reshape(E_table, [-1, 1, self.dim])
                 R_table = tf.reshape(R_table, [-1, 1, self.dim])
             elif self.model == 'ConvKB':
                 E_table = tf.reshape(E_table, [-1, self.dim, 1, 1])
                 R_table = tf.reshape(R_table, [-1, self.dim, 1, 1])
+                
             h_pos = tf.gather(E_table, self.T_pos[:, 0])
-            r_pos = tf.gather(R_table, self.T_pos[:, 1])
-            t_pos = tf.gather(E_table, self.T_pos[:, 2])
+            t_pos = tf.gather(E_table, self.T_pos[:, -1])
             h_neg = tf.gather(E_table, self.T_neg[:, 0])
-            r_neg = tf.gather(R_table, self.T_neg[:, 1])
-            t_neg = tf.gather(E_table, self.T_neg[:, 2])
+            t_neg = tf.gather(E_table, self.T_neg[:, -1])
+            r = tf.gather(R_table, self.T_pos[:, 1])
             
-            self.l2_v = []
-            s_pos, s_neg = self.em_structure(h_pos, r_pos, t_pos,
-                                             h_neg, r_neg, t_neg)
+            self.l2_v = [h_pos, t_pos, h_neg, t_neg, r]
+            s_pos, s_neg = self.em_structure(h_pos, t_pos, h_neg, t_neg, r)
             
         with tf.variable_scope('score'): #(B, 1)
             self.score_pos, self.score_neg = self.cal_score(s_pos, s_neg)
@@ -157,11 +156,8 @@ class KGE():
                        self.score_pos - self.score_neg))
             else:
                 loss = tf.reduce_sum(tf.nn.softplus(self.score_pos) + \
-                             tf.nn.softplus(- self.score_neg))
-            if self.model != 'TransE':
-                l2_loss = tf.add_n([tf.nn.l2_loss(v) for v in self.l2_v])
-            else:
-                l2_loss = 0
+                                     tf.nn.softplus(- self.score_neg))
+            l2_loss = tf.add_n([tf.nn.l2_loss(v) for v in self.l2_v])
             self.loss = loss + self.l2 * l2_loss
             self.train_op = tf.train.AdamOptimizer(self.l_r). \
                             minimize(self.loss)
@@ -191,8 +187,9 @@ class KGE():
     def em_train(self, sess):  
         """
         (1) Training and Evalution process of embedding.
-        (2) Evaluate for dev dataset totally 20 breakpoints during training,
-            evaluate for train dataset lastly.
+        (2) Calculate loss for dev dataset totally 25 breakpoints during
+            training, check whether reach the earlystop steps.
+            
         
         Args:
             sess: tf.Session
@@ -285,7 +282,7 @@ class KGE():
                 new_e = random.choice(range(self.n_E))
                 new_T = (new_e, r, ta) if self.rpc_h(r) else (h, r, new_e)
                 if new_T not in self.pool:
-                    T_neg.append(new_T)
+                    T_neg.append((new_T[0], new_T[2]))
                     break
         return np.array(T_neg)
     

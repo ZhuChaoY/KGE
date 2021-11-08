@@ -21,9 +21,9 @@ parser.add_argument('--l2', type = float, default = 5e-4,
                     help = 'l2 penalty coefficient')
 parser.add_argument('--l_r', type = float, default = 1e-3, 
                     help = 'learning rate')
-parser.add_argument('--batch_size', type = int, default = 1024,
+parser.add_argument('--batch_size', type = int, default = 2048,
                     help = 'batch size for SGD')
-parser.add_argument('--epoches', type = int, default = 400,
+parser.add_argument('--epoches', type = int, default = 500,
                     help = 'training epoches')
 parser.add_argument('--earlystop', type = int, default = 2,
                     help = 'earlystop steps')
@@ -35,12 +35,13 @@ parser.add_argument('--do_predict', type = bool, default = True,
     
 args = parser.parse_args()
 
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' #shielding warning
 os.environ['CUDA_VISIBLE_DEVICES'] = '0' #GPU number
 
 config = tf.ConfigProto() 
 config.gpu_options.allow_growth = True 
-
+        
 model = eval(args.model + '(args)')
 model.run(config) 
 
