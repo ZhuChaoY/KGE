@@ -25,28 +25,6 @@ class TransE(KGE):
 
             
 
-class DistMult(KGE):
-    """Translating Embeddings for Modeling Multi-relational Data"""
-    
-    def __init__(self, args):
-        super().__init__(args)
-            
-    
-    def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
-        s_pos = h_pos * r * t_pos
-        s_neg = h_neg * r * t_neg
-        
-        return s_pos, s_neg
-    
-    
-    def cal_score(self, s_pos, s_neg):
-        score_pos = tf.reduce_sum(s_pos, 1)
-        score_neg = tf.reduce_sum(s_neg, 1)
-        
-        return score_pos, score_neg
-
-
-
 class TransH(KGE):
     """Knowledge Graph Embedding by Translating on Hyperplanes."""
     
@@ -58,8 +36,9 @@ class TransH(KGE):
         projector = lambda s, p: \
             s - tf.reduce_sum(p * s, 1, keepdims = True) * p
         
-        P_table = tf.nn.l2_normalize(tf.get_variable('projection_table', initializer = \
-                  tf.random_uniform([self.n_R, self.dim], -self.K, self.K)), 1)
+        P_table = tf.nn.l2_normalize(tf.get_variable('projection_table',
+                  initializer = tf.random_uniform([self.n_R, self.dim],
+                  -self.K, self.K)), 1)
         p = tf.gather(P_table, self.T_pos[:, 1])
         
         self.l2_v.append(p)
@@ -81,42 +60,6 @@ class TransH(KGE):
         
         return score_pos, score_neg
     
-                 
-          
-class TransR(KGE):
-    """
-    Learning Entity and Relation Embeddings for Knowledge Graph Completion.
-    """
-    
-    def __init__(self, args):
-        super().__init__(args)
-            
-        
-    def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
-        P_table = tf.nn.l2_normalize(tf.get_variable('projection_table', initializer = \
-                  tf.random_uniform([self.n_R, self.dim, self.dim], -self.K,
-                  self.K)), 1)
-        p = tf.gather(P_table, self.T_pos[:, 1])
-        
-        self.l2_v.append(p)
-        
-        h_pos = tf.matmul(h_pos, p) 
-        t_pos = tf.matmul(t_pos, p)
-        h_neg = tf.matmul(h_neg, p)
-        t_neg = tf.matmul(t_neg, p)
-                    
-        s_pos = h_pos + r - t_pos
-        s_neg = h_neg + r - t_neg
-        
-        return s_pos, s_neg
-    
-    
-    def cal_score(self, s_pos, s_neg):
-        score_pos = tf.reduce_sum(s_pos ** 2, [1, 2])
-        score_neg = tf.reduce_sum(s_neg ** 2, [1, 2])
-        
-        return score_pos, score_neg
-
     
 
 class TransD(KGE):
@@ -129,16 +72,16 @@ class TransD(KGE):
     def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
         projector = lambda s, p_e, p_r: \
             s + tf.reduce_sum(p_e * s, 1, keepdims = True) * p_r
-        P_E_table = tf.nn.l2_normalize(tf.get_variable( \
-                    'projection_entity_table', initializer = tf.random_uniform([self.n_E,
+        P_E_table = tf.nn.l2_normalize(tf.get_variable('projection_entity_' \
+                    'table', initializer = tf.random_uniform([self.n_E,
                     self.dim], -self.K, self.K)), 1)
         p_h_pos = tf.gather(P_E_table, self.T_pos[:, 0])
         p_t_pos = tf.gather(P_E_table, self.T_pos[:, -1])
         p_h_neg = tf.gather(P_E_table, self.T_neg[:, 0])
         p_t_neg = tf.gather(P_E_table, self.T_neg[:, -1])
         
-        P_R_table = tf.nn.l2_normalize(tf.get_variable( \
-                    'projection_relation_table', initializer = tf.random_uniform([self.n_R,
+        P_R_table = tf.nn.l2_normalize(tf.get_variable('projection_relation_' \
+                    'table', initializer = tf.random_uniform([self.n_R,
                     self.dim], -self.K, self.K)), 1)
         p_r = tf.gather(P_R_table, self.T_pos[:, 1])
         
@@ -161,7 +104,7 @@ class TransD(KGE):
         
         return score_pos, score_neg
     
-                        
+    
     
 class ConvKB(KGE):
     """
@@ -191,8 +134,8 @@ class ConvKB(KGE):
     
     def cal_score(self, s_pos, s_neg):
         K = np.sqrt(6.0 / (self.dim * self.n_filter + 1))
-        w = tf.get_variable('weight', initializer = tf.random_uniform([self.dim * \
-            self.n_filter, 1], -K, K))
+        w = tf.get_variable('weight', initializer = tf.random_uniform( \
+            [self.dim * self.n_filter, 1], -K, K))
         
         #((B, D, 1, F) ==> (B, D * F)) * (D * F, 1)
         score_pos = tf.squeeze(tf.matmul(tf.nn.relu(tf.reshape(s_pos, 
@@ -203,3 +146,84 @@ class ConvKB(KGE):
         
         return score_pos, score_neg
     
+    
+    
+# class TransR(KGE):
+#     """
+#     Learning Entity and Relation Embeddings for Knowledge Graph Completion.
+#     """
+    
+#     def __init__(self, args):
+#         super().__init__(args)
+            
+        
+#     def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
+#         P_table = tf.nn.l2_normalize(tf.get_variable('projection_table',
+#                   initializer = tf.random_uniform([self.n_R, self.dim,
+#                   self.dim], -self.K, self.K)), 1)
+#         p = tf.gather(P_table, self.T_pos[:, 1])
+        
+#         self.l2_v.append(p)
+        
+#         h_pos = tf.matmul(h_pos, p) 
+#         t_pos = tf.matmul(t_pos, p)
+#         h_neg = tf.matmul(h_neg, p)
+#         t_neg = tf.matmul(t_neg, p)
+                    
+#         s_pos = h_pos + r - t_pos
+#         s_neg = h_neg + r - t_neg
+        
+#         return s_pos, s_neg
+    
+    
+#     def cal_score(self, s_pos, s_neg):
+#         score_pos = tf.reduce_sum(s_pos ** 2, [1, 2])
+#         score_neg = tf.reduce_sum(s_neg ** 2, [1, 2])
+        
+#         return score_pos, score_neg
+    
+
+# class DistMult(KGE):
+#     """Translating Embeddings for Modeling Multi-relational Data"""
+    
+#     def __init__(self, args):
+#         super().__init__(args)
+            
+    
+#     def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
+#         s_pos = h_pos * r * t_pos
+#         s_neg = h_neg * r * t_neg
+        
+#         return s_pos, s_neg
+    
+    
+#     def cal_score(self, s_pos, s_neg):
+#         score_pos = tf.reduce_sum(s_pos, 1)
+#         score_neg = tf.reduce_sum(s_neg, 1)
+        
+#         return score_pos, score_neg
+
+
+
+# class HoLE(KGE):
+#     """Holographic Embeddings of Knowledge Graphs"""
+    
+#     def __init__(self, args):
+#         super().__init__(args)
+    
+    
+#     def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
+#         projector = \
+#             lambda h, t: tf.cast(tf.ifft(tf.fft(tf.cast(h, tf.complex64)) * \
+#                          tf.fft(tf.cast(t, tf.complex64))), tf.float32)
+#         s_pos = projector(h_pos, t_pos) * r
+#         s_neg = projector(h_neg, t_neg) * r
+        
+#         return s_pos, s_neg
+    
+    
+#     def cal_score(self, s_pos, s_neg):
+#         score_pos = tf.reduce_sum(s_pos, 1)
+#         score_neg = tf.reduce_sum(s_neg, 1)
+        
+#         return score_pos, score_neg
