@@ -17,16 +17,16 @@ A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, Trans
 | **ConvKB** | 122.5 | **0.421** | **0.290** | **0.497** | 0.656 |
 
 ```
-python Run_KGE.py --model TransE --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransE --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransH --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransH --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransD --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransD --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset FB15k --dim 256 --n_filter 8 --l_r 1e-4 --batch_size 2048 --epoches 100 --do_train True --do_predict True
+python Run_KGE.py --model ConvKB --dataset FB15k --dim 256 --n_filter 8 --l_r 1e-4 --epoches 100
 ```
 
 ### FB15k-237 (14541 E + 237 R)
@@ -38,16 +38,16 @@ python Run_KGE.py --model ConvKB --dataset FB15k --dim 256 --n_filter 8 --l_r 1e
 | **ConvKB** | 260.3 | **0.284** | **0.199** | **0.314** | **0.454** |
 
 ```
-python Run_KGE.py --model TransE --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransE --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransH --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransH --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransD --dataset FB15k-237 --dim 128 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransD --dataset FB15k-237 --dim 128 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 32 --l_r 1e-4 --batch_size 2048 --epoches 100 --do_train True --do_predict True
+python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 32 --l_r 1e-4 --epoches 100
 ```
 
 ### WN18 (40943 E + 18 R)
@@ -59,16 +59,16 @@ python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 32 --l
 | **ConvKB** | 292.4 | 0.248 | 0.048 | 0.338 | 0.689 |
 
 ```
-python Run_KGE.py --model TransE --dataset WN18 --dim 128 --margin 1.5 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransE --dataset WN18 --dim 128 --margin 1.5 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransH --dataset WN18 --dim 128 --margin 1.5 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransH --dataset WN18 --dim 128 --margin 1.5 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransD --dataset WN18 --dim 256 --margin 1.5 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransD --dataset WN18 --dim 256 --margin 1.5 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18 --dim 256 --n_filter 32 --l_r 1e-4 --batch_size 2048 --epoches 100 --do_train True --do_predict True
+python Run_KGE.py --model ConvKB --dataset WN18 --dim 256 --n_filter 32 --l_r 1e-4 --epoches 100
 ```
 
 ### WN18RR (40943 E + 11 R)
@@ -80,14 +80,14 @@ python Run_KGE.py --model ConvKB --dataset WN18 --dim 256 --n_filter 32 --l_r 1e
 | **ConvKB** | 3542.6 | 0.135 | 0.015 | 0.190 | 0.396 |
 
 ```
-python Run_KGE.py --model TransE --dataset WN18RR --dim 256 --margin 2.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransE --dataset WN18RR --dim 256 --margin 2.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransH --dataset WN18RR --dim 256 --margin 2.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransH --dataset WN18RR --dim 256 --margin 2.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransD --dataset WN18RR --dim 256 --margin 1.5 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+python Run_KGE.py --model TransD --dataset WN18RR --dim 256 --margin 1.5 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --dim 256 --n_filter 32 --l_r 1e-4 --batch_size 2048 --epoches 100 --do_train True --do_predict True
+python Run_KGE.py --model ConvKB --dataset WN18RR --dim 256 --n_filter 32 --l_r 1e-4 --epoches 100
 ```
