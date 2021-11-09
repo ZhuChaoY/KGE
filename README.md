@@ -7,17 +7,6 @@ A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, Trans
 (3) TransD: Knowledge Graph Embedding via Dynamic Mapping Matrix  
 (4) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network  
 
-## Operating Instructions
-Run Run_KGE.py to train TransE, TransH, TransR, TransD, ConvKB.  
-**TransX**:   
-```
-python Run_KGE.py --model TransE --dataset FB15k --dim 128 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
-```
-**ConvKB**:  
-```
-python Run_KGE.py --model ConvKB --dataset FB15k --dim 128 --n_filter 8 --l_r 1e-4 --batch_size 2048 --epoches 100 --do_train True --do_predict True
-```
-
 ## Results (Filter)      
 ### FB15k (14951 E + 1345 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
@@ -26,6 +15,19 @@ python Run_KGE.py --model ConvKB --dataset FB15k --dim 128 --n_filter 8 --l_r 1e
 | **TransH** | **109.7** | 0.384 | 0.217 | 0.495 | **0.671** |
 | **TransD** | 124.5 | 0.351 | 0.158 | 0.490 | **0.671** |
 | **ConvKB** | 122.5 | **0.421** | **0.290** | **0.497** | 0.656 |
+
+```
+python Run_KGE.py --model TransE --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+```
+```
+python Run_KGE.py --model TransH --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+```
+```
+python Run_KGE.py --model TransD --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --batch_size 2048 --epoches 500 --do_train True --do_predict True
+```
+```
+python Run_KGE.py --model ConvKB --dataset FB15k --dim 256 --n_filter 8 --l_r 1e-4 --batch_size 2048 --epoches 100 --do_train True --do_predict True
+```
 
 ### FB15k-237 (14541 E + 237 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
