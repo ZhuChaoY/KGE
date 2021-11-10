@@ -173,7 +173,6 @@ class KGE():
             ivs = {v[0]: v[0] for v in tf.train.list_variables(p) 
                    if v[0] in tvs}
             tf.train.init_from_checkpoint(p, ivs)
-            print('    Initialize {} variables from TransE.'.format(len(ivs))) 
                     
     
     def em_train(self, sess):  

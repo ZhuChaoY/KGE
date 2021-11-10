@@ -13,11 +13,11 @@ parser.add_argument('--dataset', type = str, default = 'FB15k',
                     help = 'dataset name') 
 parser.add_argument('--dim', type = int, default = 128,
                     help = 'embedding dimension')
-parser.add_argument('--margin', type = float, default = 1.0,
+parser.add_argument('--margin', type = float, default = None,
                     help = 'margin value for TransX')
 parser.add_argument('--n_filter', type = int, default = None,
                     help = 'number of filters for ConvKB')
-parser.add_argument('--l2', type = float, default = 5e-4,
+parser.add_argument('--l2', type = float, default = 1e-3,
                     help = 'l2 penalty coefficient')
 parser.add_argument('--l_r', type = float, default = 1e-3, 
                     help = 'learning rate')
