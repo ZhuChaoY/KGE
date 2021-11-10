@@ -54,9 +54,9 @@ python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 32 --l
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
 | **TransE** | 292.5 | 0.332 | 0.071 | 0.519 | 0.813 |
-| **TransH** | **255.9** | 0.338 | 0.076 | 0.533 | 0.817 |
+| **TransH** | 255.9 | 0.338 | 0.076 | 0.533 | 0.817 |
 | **TransD** | 392.0 | **0.455** | **0.203** | **0.675** | **0.859** |
-| **ConvKB** | 292.4 | 0.248 | 0.048 | 0.338 | 0.689 |
+| **ConvKB** | **249.9** | 0.238 | 0.036 | 0.330 | 0.685 |
 
 ```
 python Run_KGE.py --model TransE --dataset WN18 --dim 512 --margin 1.5 --l_r 1e-3 --epoches 500
@@ -68,7 +68,7 @@ python Run_KGE.py --model TransH --dataset WN18 --dim 512 --margin 1.5 --l_r 1e-
 python Run_KGE.py --model TransD --dataset WN18 --dim 512 --margin 1.5 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18 --dim 256 --n_filter 32 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset WN18 --dim 512 --n_filter 32 --l_r 1e-4 --epoches 100
 ```
 
 ### WN18RR (40943 E + 11 R)
