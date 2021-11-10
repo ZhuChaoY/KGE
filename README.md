@@ -13,8 +13,8 @@ A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, Trans
 |     --     |   --   |    --   |    --    |    --    |    --     |
 | **TransE** | **104.9** | 0.371 | 0.198 | 0.487 | 0.667 |
 | **TransH** | 108.9 | 0.378 | 0.215 | 0.486 | 0.661 |
-| **TransD** | 117.2 | 0.346 | 0.145 | **0.492** | **0.675** |
-| **ConvKB** | 122.5 | **0.421** | **0.290** | **0.497** | 0.656 |
+| **TransD** | 117.2 | 0.346 | 0.145 | 0.492 | **0.675** |
+| **ConvKB** | 122.3 | **0.426** | **0.295** | **0.504** | 0.661 |
 
 ```
 python Run_KGE.py --model TransE --dataset FB15k --dim 512 --margin 1.0 --l_r 1e-3 --epoches 500
@@ -26,7 +26,7 @@ python Run_KGE.py --model TransH --dataset FB15k --dim 256 --margin 1.0 --l_r 1e
 python Run_KGE.py --model TransD --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset FB15k --dim 256 --n_filter 8 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset FB15k --dim 512 --n_filter 32 --l_r 1e-4 --epoches 100
 ```
 
 ### FB15k-237 (14541 E + 237 R)
