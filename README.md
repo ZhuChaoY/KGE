@@ -47,7 +47,7 @@ python Run_KGE.py --model TransH --dataset FB15k-237 --dim 256 --margin 1.0 --l_
 python Run_KGE.py --model TransD --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 32 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 8 --l_r 1e-4 --epoches 100
 ```
 
 ### WN18 (40943 E + 18 R)
