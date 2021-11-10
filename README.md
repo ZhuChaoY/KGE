@@ -11,13 +11,13 @@ A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, Trans
 ### FB15k (14951 E + 1345 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 111.2 | 0.378 | 0.210 | 0.491 | 0.668 |
-| **TransH** | **109.7** | 0.384 | 0.217 | 0.495 | **0.671** |
-| **TransD** | 124.5 | 0.351 | 0.158 | 0.490 | **0.671** |
+| **TransE** | 104.9 | 0.371 | 0.198 | 0.487 | 0.667 |
+| **TransH** | **108.9** | 0.378 | 0.215 | 0.486 | **0.661** |
+| **TransD** | 117.2 | 0.346 | 0.145 | 0.492 | **0.675** |
 | **ConvKB** | 122.5 | **0.421** | **0.290** | **0.497** | 0.656 |
 
 ```
-python Run_KGE.py --model TransE --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransE --dataset FB15k --dim 512 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
 python Run_KGE.py --model TransH --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
@@ -32,9 +32,9 @@ python Run_KGE.py --model ConvKB --dataset FB15k --dim 256 --n_filter 8 --l_r 1e
 ### FB15k-237 (14541 E + 237 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 252.8 | 0.222 | 0.108 | 0.272 | 0.436 |
-| **TransH** | **242.8** | 0.231 | 0.117 | 0.284 | 0.444 |
-| **TransD** | 291.9 | 0.212 | 0.088 | 0.274 | 0.440 |
+| **TransE** | 247.7 | 0.223 | 0.106 | 0.277 | 0.444 |
+| **TransH** | **241.2** | 0.230 | 0.116 | 0.283 | 0.444 |
+| **TransD** | 291.4 | 0.205 | 0.072 | 0.278 | 0.448 |
 | **ConvKB** | 260.3 | **0.284** | **0.199** | **0.314** | **0.454** |
 
 ```
@@ -44,7 +44,7 @@ python Run_KGE.py --model TransE --dataset FB15k-237 --dim 256 --margin 1.0 --l_
 python Run_KGE.py --model TransH --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
-python Run_KGE.py --model TransD --dataset FB15k-237 --dim 128 --margin 1.0 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransD --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 32 --l_r 1e-4 --epoches 100
