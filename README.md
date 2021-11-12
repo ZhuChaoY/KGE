@@ -95,7 +95,6 @@ python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5
 python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
 ```
 ```
-```
 python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --l_r 1e-4 --epoches 100
 ```
 ```
