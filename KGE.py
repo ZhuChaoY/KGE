@@ -12,8 +12,11 @@ from os.path import exists
 
 class KGE():
     """
-    A class of processing and tool functions for Knowledge Graph Embedding.
-    Using R-GCN to to optimize the result.
+    A Framework of R-GCN enhanced Knowledge Graph Embedding Models.
+    (1) Pre-train KGE models by traditional process.
+    (2) Serve a single layer of R-GCN as the encoder (The pre trained entity
+        embeddings are the input feature of R-GCN), and a KGE model as the
+        docoder, fine-tuning the pre-trained KGE models by few epoches.
     """
     
     def __init__(self, args):
