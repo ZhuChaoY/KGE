@@ -74,20 +74,37 @@ python Run_KGE.py --model ConvKB --dataset WN18 --dim 256 --n_filter 32 --l_r 1e
 ### WN18RR (40943 E + 11 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | **3537.9** | 0.143 | 0.006 | 0.224 | 0.417 |
+| **TransE** | 3537.9 | 0.143 | 0.006 | 0.224 | 0.417 |
+| **TransE (R-GCN)** | **3185.4** | 0.156 | 0.009 | 0.248 | 0.437 |
 | **TransH** | 3656.1 | 0.154 | 0.006 | 0.255 | 0.431 |
-| **TransD** | 4124.0 | **0.161** | 0.004 | **0.271** | **0.440** |
-| **ConvKB** | 3760.2 | 0.149 | **0.019** | 0.220 | 0.412 |
+| **TransH (R-GCN)** | 3502.1 | 0.156 | 0.010 | 0.252 | 0.437 |
+| **TransD** | 4124.0 | 0.161 | 0.004 | 0.271 | **0.440** |
+| **TransD (R-GCN)** | 4031.7 | **0.165** | 0.006 | **0.286** | 0.436 |
+| **ConvKB** | 3760.2 | 0.149 | 0.019 | 0.220 | 0.412 |
+| **ConvKB (R-GCN)** | 3477.9 | 0.160 | **0.042** | 0.218 | 0.411 |
+
 
 ```
-python Run_KGE.py --model TransE --dataset WN18RR --dim 256 --margin 1.5 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransE --dataset WN18RR --margin 1.5 --do_train True --do_predict True
 ```
 ```
-python Run_KGE.py --model TransH --dataset WN18RR --dim 256 --margin 1.5 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransE --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True --do_train True --do_predict True
 ```
 ```
-python Run_KGE.py --model TransD --dataset WN18RR --dim 256 --margin 1.5 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransH --dataset WN18RR --margin 1.5 --do_train True --do_predict True
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --dim 256 --n_filter 32 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model TransH --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True --do_train True --do_predict True
+```
+```
+python Run_KGE.py --model TransD --dataset WN18RR --margin 1.5 --do_train True --do_predict True
+```
+```
+python Run_KGE.py --model TransD --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True --do_train True --do_predict True
+```
+```
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --l_r 1e-4 --epoches 100 --do_train True --do_predict True
+```
+```
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True --do_train True --do_predict True
 ```
