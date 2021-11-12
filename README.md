@@ -17,42 +17,38 @@ A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
 | **TransE** | 113.2 | 0.372 | 0.207 | 0.480 | 0.658 |
+| **TransE (R-GCN)** | | | | | |
 | **TransH** | **108.9** | 0.378 | 0.215 | 0.486 | 0.661 |
+| **TransH (R-GCN)** | | | | | |
 | **TransD** | 117.2 | 0.346 | 0.145 | **0.492** | **0.675** |
+| **TransD (R-GCN)** | | | | | |
 | **ConvKB** | 120.6 | **0.416** | **0.286** | **0.492** | 0.652 |
+| **ConvKB (R-GCN)** | | | | | |
 
 ```
-python Run_KGE.py --model TransE --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransX --dataset FB15k --margin 1.0
 ```
 ```
-python Run_KGE.py --model TransH --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
-```
-```
-python Run_KGE.py --model TransD --dataset FB15k --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
-```
-```
-python Run_KGE.py --model ConvKB --dataset FB15k --dim 256 --n_filter 8 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 8 --l_r 1e-4 --epoches 100
 ```
 
 ### FB15k-237 (14541 E + 237 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
 | **TransE** | 247.7 | 0.223 | 0.106 | 0.277 | 0.444 |
+| **TransE (R-GCN)** | | | | | |
 | **TransH** | **241.2** | 0.230 | 0.116 | 0.283 | 0.444 |
+| **TransH (R-GCN)** | | | | | |
 | **TransD** | 291.4 | 0.205 | 0.072 | 0.278 | 0.448 |
+| **TransD (R-GCN)** | | | | | |
 | **ConvKB** | 253.5 | **0.288** | **0.202** | **0.318** | **0.459** |
+| **ConvKB (R-GCN)** | | | | | |
 
 ```
-python Run_KGE.py --model TransE --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0
 ```
 ```
-python Run_KGE.py --model TransH --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
-```
-```
-python Run_KGE.py --model TransD --dataset FB15k-237 --dim 256 --margin 1.0 --l_r 1e-3 --epoches 500
-```
-```
-python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 8 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 8 --l_r 1e-4 --epoches 100
 ```
 
 ### WN18 (40943 E + 18 R)
