@@ -1,10 +1,10 @@
 import os
 import argparse
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from Models import *
     
 
-parser = argparse.ArgumentParser(description = 'KGE')
+parser = argparse.ArgumentParser(description = 'R-GCN enhanced KGE')
 
 #'TransE', 'TransH', 'TransR', 'TransD', 'ConvKB'
 parser.add_argument('--model', type = str, default = 'TransE',
