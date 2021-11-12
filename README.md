@@ -9,7 +9,7 @@ A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE
 (1) TransE: Translating Embeddings for Modeling Multi-relational Data   
 (2) TransH: Knowledge Graph Embedding by Translating on Hyperplanes  
 (3) TransD: Knowledge Graph Embedding via Dynamic Mapping Matrix  
-(4) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network 
+(4) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network    
 (5) R-GCN: Modeling Relational Data with Graph Convolutional Networks (https://github.com/MichSchli/RelationPrediction)
 
 ## Results (Filter)      
