@@ -58,7 +58,9 @@ python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 8 --l_
 | **TransH** | 275.7 | 0.336 | 0.088 | 0.511 | 0.800 |
 | **TransH (R-GCN)** | **266.2** | 0.402 | 0.185 | 0.559 | 0.791 |
 | **TransD** | 351.7 | 0.405 | 0.140 | **0.625** | **0.842** |
+| **TransD (R-GCN)** | 308.6 | **0.440** | **0.218** | 0.612 | 0.820 |
 | **ConvKB** | 280.1 | 0.239 | 0.031 | 0.342 | 0.688 |
+| **ConvKB (R-GCN)** | 288.5 | 0.283 | 0.058 | 0.415 | 0.733 |
 
 ```
 python Run_KGE.py --model TransE --dataset WN18 --margin 1.5
