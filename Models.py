@@ -38,10 +38,10 @@ class TransH(KGE):
         
         P_table = tf.nn.l2_normalize(tf.get_variable('projection_table',
                   initializer = tf.random_uniform([self.n_R, self.dim],
-                  -self.K, self.K)), 1)
+                                                  -self.K, self.K)), 1)
         p = tf.gather(P_table, self.T_pos[:, 1])
         
-        self.l2_v.append(p)
+        self.l2_s.append(p)
         
         h_pos = projector(h_pos, p)
         t_pos = projector(t_pos, p)
@@ -85,7 +85,7 @@ class TransD(KGE):
                     self.dim], -self.K, self.K)), 1)
         p_r = tf.gather(P_R_table, self.T_pos[:, 1])
         
-        self.l2_v.extend([p_h_pos, p_t_pos, p_h_neg, p_t_neg, p_r]) 
+        self.l2_s.extend([p_h_pos, p_t_pos, p_h_neg, p_t_neg, p_r]) 
         
         h_pos = projector(h_pos, p_h_pos, p_r)
         t_pos = projector(t_pos, p_t_pos, p_r)
@@ -133,97 +133,17 @@ class ConvKB(KGE):
     
     
     def cal_score(self, s_pos, s_neg):
-        K = np.sqrt(6.0 / (self.dim * self.n_filter + 1))
-        w = tf.get_variable('weight', initializer = tf.random_uniform( \
-            [self.dim * self.n_filter, 1], -K, K))
+        dn = self.dim * self.n_filter
+        K = np.sqrt(6.0 / (dn + 1))
+        w = tf.get_variable('weight', initializer = tf.random_uniform([dn, 1],
+                                                                      -K, K))
         
         #((B, D, 1, F) ==> (B, D * F)) * (D * F, 1)
         score_pos = tf.squeeze(tf.matmul(tf.nn.relu(tf.reshape(s_pos, 
-                               [-1, self.dim * self.n_filter])), w))
-        score_neg = tf.squeeze(tf.matmul(tf.nn.relu(tf.reshape(s_neg,
-                               [-1, self.dim * self.n_filter])), w))
-        self.l2_v.append(w) 
+                                                               [-1, dn])), w))
+        score_neg = tf.squeeze(tf.matmul(tf.nn.relu(tf.reshape(s_neg, 
+                                                               [-1, dn])), w))
+        self.l2_s.append(w) 
         
         return score_pos, score_neg
     
-    
-    
-# class TransR(KGE):
-#     """
-#     Learning Entity and Relation Embeddings for Knowledge Graph Completion.
-#     """
-    
-#     def __init__(self, args):
-#         super().__init__(args)
-            
-        
-#     def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
-#         P_table = tf.nn.l2_normalize(tf.get_variable('projection_table',
-#                   initializer = tf.random_uniform([self.n_R, self.dim,
-#                   self.dim], -self.K, self.K)), 1)
-#         p = tf.gather(P_table, self.T_pos[:, 1])
-        
-#         self.l2_v.append(p)
-        
-#         h_pos = tf.matmul(h_pos, p) 
-#         t_pos = tf.matmul(t_pos, p)
-#         h_neg = tf.matmul(h_neg, p)
-#         t_neg = tf.matmul(t_neg, p)
-                    
-#         s_pos = h_pos + r - t_pos
-#         s_neg = h_neg + r - t_neg
-        
-#         return s_pos, s_neg
-    
-    
-#     def cal_score(self, s_pos, s_neg):
-#         score_pos = tf.reduce_sum(s_pos ** 2, [1, 2])
-#         score_neg = tf.reduce_sum(s_neg ** 2, [1, 2])
-        
-#         return score_pos, score_neg
-    
-
-# class DistMult(KGE):
-#     """Translating Embeddings for Modeling Multi-relational Data"""
-    
-#     def __init__(self, args):
-#         super().__init__(args)
-            
-    
-#     def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
-#         s_pos = h_pos * r * t_pos
-#         s_neg = h_neg * r * t_neg
-        
-#         return s_pos, s_neg
-    
-    
-#     def cal_score(self, s_pos, s_neg):
-#         score_pos = tf.reduce_sum(s_pos, 1)
-#         score_neg = tf.reduce_sum(s_neg, 1)
-        
-#         return score_pos, score_neg
-
-
-
-# class HoLE(KGE):
-#     """Holographic Embeddings of Knowledge Graphs"""
-    
-#     def __init__(self, args):
-#         super().__init__(args)
-    
-    
-#     def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
-#         projector = \
-#             lambda h, t: tf.cast(tf.ifft(tf.fft(tf.cast(h, tf.complex64)) * \
-#                          tf.fft(tf.cast(t, tf.complex64))), tf.float32)
-#         s_pos = projector(h_pos, t_pos) * r
-#         s_neg = projector(h_neg, t_neg) * r
-        
-#         return s_pos, s_neg
-    
-    
-#     def cal_score(self, s_pos, s_neg):
-#         score_pos = tf.reduce_sum(s_pos, 1)
-#         score_neg = tf.reduce_sum(s_neg, 1)
-        
-#         return score_pos, score_neg
