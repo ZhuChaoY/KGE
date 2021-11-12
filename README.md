@@ -85,26 +85,26 @@ python Run_KGE.py --model ConvKB --dataset WN18 --dim 256 --n_filter 32 --l_r 1e
 
 
 ```
-python Run_KGE.py --model TransE --dataset WN18RR --margin 1.5 --do_train True --do_predict True
+python Run_KGE.py --model TransE --dataset WN18RR --margin 1.5
 ```
 ```
-python Run_KGE.py --model TransE --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True --do_train True --do_predict True
+python Run_KGE.py --model TransE --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
 ```
 ```
-python Run_KGE.py --model TransH --dataset WN18RR --margin 1.5 --do_train True --do_predict True
+python Run_KGE.py --model TransH --dataset WN18RR --margin 1.5
 ```
 ```
-python Run_KGE.py --model TransH --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True --do_train True --do_predict True
+python Run_KGE.py --model TransH --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
 ```
 ```
-python Run_KGE.py --model TransD --dataset WN18RR --margin 1.5 --do_train True --do_predict True
+python Run_KGE.py --model TransD --dataset WN18RR --margin 1.5
 ```
 ```
-python Run_KGE.py --model TransD --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True --do_train True --do_predict True
+python Run_KGE.py --model TransD --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --l_r 1e-4 --epoches 100 --do_train True --do_predict True
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --l_r 1e-4 --epoches 100
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True --do_train True --do_predict True
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
 ```
