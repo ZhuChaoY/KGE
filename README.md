@@ -53,22 +53,36 @@ python Run_KGE.py --model ConvKB --dataset FB15k-237 --dim 256 --n_filter 8 --l_
 ### WN18 (40943 E + 18 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 294.1 | 0.350 | 0.137 | 0.486 | 0.762 |
+| **TransE** | 301.7 | 0.331 | 0.087 | 0.499 | 0.798 |
+| **TransE (R-GCN)** | 271.4 | 0.400 | 0.193 | 0.542 | 0.787 |
 | **TransH** | 275.7 | 0.336 | 0.088 | 0.511 | 0.800 |
-| **TransD** | 325.7 | **0.415** | **0.183** | **0.594** | **0.813** |
-| **ConvKB** | **280.1** | 0.239 | 0.031 | 0.342 | 0.688 |
+| **TransH (R-GCN)** | **266.2** | 0.402 | 0.185 | 0.559 | 0.791 |
+| **TransD** | 351.7 | 0.405 | 0.140 | **0.625** | **0.842** |
+| **ConvKB** | 280.1 | 0.239 | 0.031 | 0.342 | 0.688 |
 
 ```
-python Run_KGE.py --model TransE --dataset WN18 --dim 128 --margin 1.5 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransE --dataset WN18 --margin 1.5
 ```
 ```
-python Run_KGE.py --model TransH --dataset WN18 --dim 256 --margin 1.5 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransE --dataset WN18 --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
 ```
 ```
-python Run_KGE.py --model TransD --dataset WN18 --dim 128 --margin 1.5 --l_r 1e-3 --epoches 500
+python Run_KGE.py --model TransH --dataset WN18 --margin 1.5
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18 --dim 256 --n_filter 32 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model TransH --dataset WN18 --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+```
+```
+python Run_KGE.py --model TransD --dataset WN18 --margin 1.5
+```
+```
+python Run_KGE.py --model TransD --dataset WN18 --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+```
+```
+python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 32 --l_r 1e-4 --epoches 100
+```
+```
+python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 32 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
 ```
 
 ### WN18RR (40943 E + 11 R)
