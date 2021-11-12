@@ -1,11 +1,16 @@
 # R-GCN enhanced KGE
 A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE, TransH, TransD, ConvKB) by tensorflow.
 
+## Main
+(1) Train KGE models by traditional process.
+(2) Serve a single layer R-GCN as encoder, and KGE models as the docoder, fine-tuning the trained KGE models by few epoches. (--add_rgcn True)
+
 ## Reference
 (1) TransE: Translating Embeddings for Modeling Multi-relational Data   
 (2) TransH: Knowledge Graph Embedding by Translating on Hyperplanes  
 (3) TransD: Knowledge Graph Embedding via Dynamic Mapping Matrix  
-(4) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network  
+(4) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network 
+(5) R-GCN: Modeling Relational Data with Graph Convolutional Networks (https://github.com/MichSchli/RelationPrediction)
 
 ## Results (Filter)      
 ### FB15k (14951 E + 1345 R)
