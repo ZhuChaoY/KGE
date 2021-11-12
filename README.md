@@ -1,5 +1,5 @@
-# KGE
-A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, TransD, ConvKB) by tensorflow.
+# R-GCN enhanced KGE
+A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE, TransH, TransD, ConvKB) by tensorflow.
 
 ## Reference
 (1) TransE: Translating Embeddings for Modeling Multi-relational Data   
