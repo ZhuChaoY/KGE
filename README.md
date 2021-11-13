@@ -29,7 +29,7 @@ A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE
 python Run_KGE.py --model TransX --dataset FB15k --margin 1.0
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 8 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 16 --l_r 1e-4 --epoches 100
 ```
 
 ### FB15k-237 (14541 E + 237 R)
@@ -48,38 +48,38 @@ python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 8 --l_r 1e-4 --epoch
 python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0
 ```
 ```
-python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 8 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 16 --l_r 1e-4 --epoches 100
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 8 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 16 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
 ```
 
 ### WN18 (40943 E + 18 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 301.7 | 0.331 | 0.087 | 0.499 | 0.798 |
-| **TransE (R-GCN)** | 271.4 | 0.400 | 0.193 | 0.542 | 0.787 |
-| **TransH** | 275.7 | 0.336 | 0.088 | 0.511 | 0.800 |
-| **TransH (R-GCN)** | **266.2** | 0.402 | 0.185 | 0.559 | 0.791 |
-| **TransD** | 351.7 | 0.405 | 0.140 | **0.625** | **0.842** |
-| **TransD (R-GCN)** | 308.6 | **0.440** | **0.218** | 0.612 | 0.820 |
-| **ConvKB** | 280.1 | 0.239 | 0.031 | 0.342 | 0.688 |
-| **ConvKB (R-GCN)** | 288.5 | 0.283 | 0.058 | 0.415 | 0.733 |
+| **TransE** | 267.0 | 0.333 | 0.089 | 0.504 | 0.792 |
+| **TransE (R-GCN)** | **251.3** | 0.398 | 0.183 | 0.551 | 0.789 |
+| **TransH** | 290.1 | 0.336 | 0.090 | 0.512 | 0.793 |
+| **TransH (R-GCN)** | 278.6 | 0.402 | 0.193 | 0.551 | 0.783 |
+| **TransD** | 377.5 | 0.394 | 0.132 | **0.609** | **0.823** |
+| **TransD (R-GCN)** | 335.3 | **0.435** | **0.214** | 0.605 | 0.811 |
+| **ConvKB** | 300.4 | 0.223 | 0.034 | 0.300 | 0.645 |
+| **ConvKB (R-GCN)** | 288.2 | 0.266 | 0.049 | 0.386 | 0.703 |
 
 ```
 python Run_KGE.py --model TransX --dataset WN18 --margin 1.5
 ```
 ```
-python Run_KGE.py --model TransX --dataset WN18 --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+python Run_KGE.py --model TransX --dataset WN18 --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 32 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 16 --l_r 1e-4 --epoches 100
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 32 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 16 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
 ```
 
 ### WN18RR (40943 E + 11 R)
@@ -102,8 +102,8 @@ python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5
 python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --l_r 1e-4 --epoches 100
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 16 --l_r 1e-4 --epoches 100
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 16 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
 ```
