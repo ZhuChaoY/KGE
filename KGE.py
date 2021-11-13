@@ -191,7 +191,7 @@ class KGE():
     def rgcn_layer(self):
         """
         A layer of R-GCN.
-        Set n_B == 32.
+        Set n_B == 250.
         If n_R <= n_B: don't apply basis decompasition.
         """
         
