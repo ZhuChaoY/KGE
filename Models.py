@@ -1,6 +1,6 @@
 from KGE import KGE
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 
 class TransE(KGE):
@@ -10,19 +10,23 @@ class TransE(KGE):
         super().__init__(args)
             
     
-    def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
-        s_pos = h_pos + r - t_pos
-        s_neg = h_neg + r - t_neg
+    def kge_variables(self):
+        pass
+    
         
-        return s_pos, s_neg
+    def em_structure(self, h, r, t, key = 'pos'):
+        return h + r - t
     
     
-    def cal_score(self, s_pos, s_neg):
-        score_pos = tf.reduce_sum(s_pos ** 2, 1)
-        score_neg = tf.reduce_sum(s_neg ** 2, 1)
+    def cal_score(self, s):
+        return tf.reduce_sum(s ** 2, -1)
+            
+    
+    def cal_lp_score(self, h, r, t):        
+        s_rpc_h = self.E_table + tf.expand_dims(r - t, 1)  
+        s_rpc_t = tf.expand_dims(h + r, 1) - self.E_table
+        return self.cal_score(s_rpc_h), self.cal_score(s_rpc_t)
         
-        return score_pos, score_neg
-
             
 
 class TransH(KGE):
@@ -30,37 +34,36 @@ class TransH(KGE):
     
     def __init__(self, args):
         super().__init__(args)
+        
             
+    def kge_variables(self):
+        P_table = tf.get_variable('projection_table', initializer = \
+                  tf.random_uniform([self.n_R, self.dim], -self.K, self.K))
+        P_table = tf.nn.l2_normalize(P_table, 1)
+        self.p = tf.gather(P_table, self.T_pos[:, 1])
         
-    def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
-        projector = lambda s, p: \
-            s - tf.reduce_sum(p * s, 1, keepdims = True) * p
+        self.l2_kge.append(self.p)
         
-        P_table = tf.nn.l2_normalize(tf.get_variable('projection_table',
-                  initializer = tf.random_uniform([self.n_R, self.dim],
-                                                  -self.K, self.K)), 1)
-        p = tf.gather(P_table, self.T_pos[:, 1])
         
-        self.l2_s.append(p)
-        
-        h_pos = projector(h_pos, p)
-        t_pos = projector(t_pos, p)
-        h_neg = projector(h_neg, p)
-        t_neg = projector(t_neg, p)
-                    
-        s_pos = h_pos + r - t_pos
-        s_neg = h_neg + r - t_neg
-        
-        return s_pos, s_neg
+    def em_structure(self, h, r, t, key = 'pos'):       
+        self.projector = lambda s, p: \
+            s - tf.reduce_sum(p * s, -1, keepdims = True) * p         
+        h = self.projector(h, self.p)
+        t = self.projector(t, self.p)
+        return h + r - t
     
     
-    def cal_score(self, s_pos, s_neg):
-        score_pos = tf.reduce_sum(s_pos ** 2, 1)
-        score_neg = tf.reduce_sum(s_neg ** 2, 1)
-        
-        return score_pos, score_neg
+    def cal_score(self, s):
+        return tf.reduce_sum(s ** 2, -1)
     
     
+    def cal_lp_score(self, h, r, t):        
+        p_E_table = self.projector(self.E_table, tf.expand_dims(self.p, 1))
+        s_rpc_h = p_E_table + tf.expand_dims(r - self.projector(t, self.p), 1)
+        s_rpc_t = tf.expand_dims(self.projector(h, self.p) + r, 1) - p_E_table
+        return self.cal_score(s_rpc_h), self.cal_score(s_rpc_t)
+    
+
 
 class TransD(KGE):
     """Knowledge Graph Embedding via Dynamic Mapping Matrix."""
@@ -68,43 +71,54 @@ class TransD(KGE):
     def __init__(self, args):
         super().__init__(args)
             
+    
+    def kge_variables(self):
+        self.PE_table = tf.get_variable('projection_entity_table',
+                        initializer = tf.random_uniform([self.n_E, self.dim],
+                                                        -self.K, self.K))
+        self.PE_table = tf.nn.l2_normalize(self.PE_table, 1)
+        self.ph_pos = tf.gather(self.PE_table, self.T_pos[:, 0])
+        self.pt_pos = tf.gather(self.PE_table, self.T_pos[:, -1])
+        self.ph_neg = tf.gather(self.PE_table, self.T_neg[:, 0])
+        self.pt_neg = tf.gather(self.PE_table, self.T_neg[:, -1])
         
-    def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
-        projector = lambda s, p_e, p_r: \
-            s + tf.reduce_sum(p_e * s, 1, keepdims = True) * p_r
-        P_E_table = tf.nn.l2_normalize(tf.get_variable('projection_entity_' \
-                    'table', initializer = tf.random_uniform([self.n_E,
-                    self.dim], -self.K, self.K)), 1)
-        p_h_pos = tf.gather(P_E_table, self.T_pos[:, 0])
-        p_t_pos = tf.gather(P_E_table, self.T_pos[:, -1])
-        p_h_neg = tf.gather(P_E_table, self.T_neg[:, 0])
-        p_t_neg = tf.gather(P_E_table, self.T_neg[:, -1])
+        PR_table = tf.get_variable('projection_relation_table', initializer = \
+                   tf.random_uniform([self.n_R, self.dim], -self.K, self.K))
+        PR_table = tf.nn.l2_normalize(PR_table, 1)
+        self.pr = tf.gather(PR_table, self.T_pos[:, 1])
         
-        P_R_table = tf.nn.l2_normalize(tf.get_variable('projection_relation_' \
-                    'table', initializer = tf.random_uniform([self.n_R,
-                    self.dim], -self.K, self.K)), 1)
-        p_r = tf.gather(P_R_table, self.T_pos[:, 1])
+        self.l2_kge.extend([self.ph_pos, self.pt_pos, self.pr,
+                            self.ph_neg, self.pt_neg]) 
+            
         
-        self.l2_s.extend([p_h_pos, p_t_pos, p_h_neg, p_t_neg, p_r]) 
+    def em_structure(self, h, r, t, key = 'pos'):
+        self.projector = lambda s, p_e, p_r: \
+            s + tf.reduce_sum(p_e * s, -1, keepdims = True) * p_r 
         
-        h_pos = projector(h_pos, p_h_pos, p_r)
-        t_pos = projector(t_pos, p_t_pos, p_r)
-        h_neg = projector(h_neg, p_h_neg, p_r)
-        t_neg = projector(t_neg, p_t_neg, p_r)
-                    
-        s_pos = h_pos + r - t_pos
-        s_neg = h_neg + r - t_neg
-        
-        return s_pos, s_neg
+        if key == 'pos':
+            ph, pt = self.ph_pos, self.pt_pos
+        elif key == 'neg':
+            ph, pt = self.ph_neg, self.pt_neg
+            
+        h = self.projector(h, ph, self.pr)
+        t = self.projector(t, pt, self.pr)
+        return h + r - t
     
     
-    def cal_score(self, s_pos, s_neg):
-        score_pos = tf.reduce_sum(s_pos ** 2, 1)
-        score_neg = tf.reduce_sum(s_neg ** 2, 1)
-        
-        return score_pos, score_neg
+    def cal_score(self, s):
+        return tf.reduce_sum(s ** 2, -1)
     
     
+    def cal_lp_score(self, h, r, t):        
+        p_E_table = self.projector(self.E_table, self.PE_table,
+                                   tf.expand_dims(self.pr, 1))
+        s_rpc_h = p_E_table + tf.expand_dims(r - self.projector(t,
+                  self.pt_pos, self.pr), 1)
+        s_rpc_t = tf.expand_dims(self.projector(h, self.ph_pos,
+                  self.pr) + r, 1) - p_E_table
+        return self.cal_score(s_rpc_h), self.cal_score(s_rpc_t)
+    
+
     
 class ConvKB(KGE):
     """
@@ -116,34 +130,45 @@ class ConvKB(KGE):
         super().__init__(args)
         
         
-    def em_structure(self, h_pos, t_pos, h_neg, t_neg, r):
+    def kge_variables(self):
         init_f = np.array([[[np.random.normal(0.1, 0.01, self.n_filter)],  
                             [np.random.normal(0.1, 0.01, self.n_filter)], 
                             [np.random.normal(-0.1, 0.01, self.n_filter)]]])
-        f = tf.get_variable('filter', [1, 3, 1, self.n_filter],
-            initializer = tf.constant_initializer(init_f))
+        self.F = tf.get_variable('filter', [1, 3, 1, self.n_filter],
+                                 initializer = tf.constant_initializer(init_f))
         
+        K = np.sqrt(6.0 / (self.dim * self.n_filter + 1))
+        self.W = tf.get_variable('weight', initializer = \
+                 tf.random_uniform([self.dim * self.n_filter, 1], -K, K))
+        
+        self.l2_kge.append(self.W)
+    
+        
+    def em_structure(self, h, r, t, key = 'pos'):
         #(B, D, 3, 1) conv (1, 3, 1, F) ==> (B, D, 1, F)
-        s_pos = tf.nn.conv2d(tf.concat([h_pos, r, t_pos], 2), 
-                f, strides = [1, 1, 1, 1], padding = 'VALID') 
-        s_neg = tf.nn.conv2d(tf.concat([h_neg, r, t_neg], 2), 
-                f, strides = [1, 1, 1, 1], padding = 'VALID')
-        
-        return s_pos, s_neg
+        return tf.nn.conv2d(tf.concat([h, r, t], 2), self.F,
+                            strides = [1, 1, 1, 1], padding = 'VALID') 
     
     
-    def cal_score(self, s_pos, s_neg):
-        dn = self.dim * self.n_filter
-        K = np.sqrt(6.0 / (dn + 1))
-        w = tf.get_variable('weight', initializer = tf.random_uniform([dn, 1],
-                                                                      -K, K))
+    def cal_score(self, s):
+        #((B, D, 1, F) ==> (B, D * F)) * (D * F, 1) ==> (B, 1)
+        return tf.squeeze(tf.matmul(tf.nn.relu(tf.reshape(s, [-1, self.dim * \
+               self.n_filter])), self.W))
+      
         
-        #((B, D, 1, F) ==> (B, D * F)) * (D * F, 1)
-        score_pos = tf.squeeze(tf.matmul(tf.nn.relu(tf.reshape(s_pos, 
-                                                               [-1, dn])), w))
-        score_neg = tf.squeeze(tf.matmul(tf.nn.relu(tf.reshape(s_neg, 
-                                                               [-1, dn])), w))
-        self.l2_s.append(w) 
+    def cal_lp_score(self, h, r, t):                 
+        E_table = tf.tile(self.E_table, [3, 1, 1, 1])
+        s_rpc_h = tf.nn.conv2d(tf.concat([E_table, tf.reshape(tf.tile( \
+                  tf.expand_dims(tf.concat([r, t], 2), 1), [1, self.n_E, 1, 1,
+                  1]), [-1, self.dim, 2, 1])], 2), self.F,
+                  strides = [1, 1, 1, 1], padding = 'VALID')
+        s_rpc_t = tf.nn.conv2d(tf.concat([tf.reshape(tf.tile(tf.expand_dims( \
+                  tf.concat([h, r], 2), 1), [1, self.n_E, 1, 1, 1]), [-1,
+                  self.dim, 2, 1]), E_table], 2), self.F,
+                  strides = [1, 1, 1, 1], padding = 'VALID')
+            
+        lp_h = tf.reshape(self.cal_score(s_rpc_h), [-1, self.n_E])
+        lp_t = tf.reshape(self.cal_score(s_rpc_t), [-1, self.n_E])
+            
+        return lp_h, lp_t
         
-        return score_pos, score_neg
-    

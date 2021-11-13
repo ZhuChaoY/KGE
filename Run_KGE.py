@@ -11,7 +11,7 @@ parser.add_argument('--model', type = str, default = 'TransE',
                     help = 'model name') 
 parser.add_argument('--dataset', type = str, default = 'FB15k',
                     help = 'dataset') #'FB15k', 'FB15k-237', 'WN18', 'WN18RR'
-parser.add_argument('--dim', type = int, default = 256,
+parser.add_argument('--dim', type = int, default = 250,
                     help = 'embedding dim')
 parser.add_argument('--margin', type = float, default = None,
                     help = 'margin value for TransX')
@@ -23,11 +23,11 @@ parser.add_argument('--l2', type = float, default = 1e-3,
                     help = 'l2 penalty coefficient')
 parser.add_argument('--l_r', type = float, default = 1e-3, 
                     help = 'learning rate')
-parser.add_argument('--batch_size', type = int, default = 2048,
+parser.add_argument('--batch_size', type = int, default = 2000,
                     help = 'batch size for SGD')
 parser.add_argument('--epoches', type = int, default = 500,
                     help = 'training epoches')
-parser.add_argument('--earlystop', type = int, default = 2,
+parser.add_argument('--earlystop', type = int, default = 3,
                     help = 'earlystop steps')
 parser.add_argument('--add_rgcn', type = bool, default = False,
                     help = 'whether add R-GCN layer')

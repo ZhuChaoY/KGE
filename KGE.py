@@ -4,8 +4,8 @@ import json
 import random
 import collections
 import numpy as np
+import tensorflow as tf
 import scipy.sparse as sp
-import tensorflow.compat.v1 as tf
 from os import makedirs
 from os.path import exists
 
@@ -39,12 +39,12 @@ class KGE():
                         self.dim, self.margin if self.model != 'ConvKB'
                         else self.n_filter)
         if self.add_rgcn:
-            self.out_dir += ' (add R-GCN)'
+            self.out_dir += ' (R-GCN)'
         if not exists(self.out_dir):
             makedirs(self.out_dir)
         
         print('\n\n' + '==' * 4 + ' < {} > && < {} > {}'.format(self.model,
-             self.dataset, '(add R-GCN) ' if self.add_rgcn else '') + '==' * 4)         
+             self.dataset, '(R-GCN) ' if self.add_rgcn else '') + '==' * 4)         
         self.em_data()
         self.common_structure()
     
@@ -120,56 +120,57 @@ class KGE():
         if self.add_rgcn:        
             A = self.get_A()
             self.supports = [tf.sparse_placeholder(tf.float32)
-                             for _ in range(self.n_R)]
+                              for _ in range(self.n_R)]
             self.feed_dict = {self.supports[r]: A[r] for r in range(self.n_R)}
         
             with tf.variable_scope('R-GCN'): 
                 self.input = tf.get_variable('input_feature', [self.n_E,
-                             self.dim], trainable = False)
-                E_table = self.rgcn_layer()
+                              self.dim], trainable = False)
+                self.E_table = self.rgcn_layer()
                 
         with tf.variable_scope('structure'): 
             if not self.add_rgcn:
-                E_table = tf.get_variable('entity_table', initializer = \
+                self.E_table = tf.get_variable('entity_table', initializer = \
                       tf.random_uniform([self.n_E, self.dim], -self.K, self.K))
-            E_table = tf.nn.l2_normalize(E_table, 1)    
+            self.E_table = tf.nn.l2_normalize(self.E_table, 1)    
             R_table = tf.get_variable('relation_table', initializer = \
                       tf.random_uniform([self.n_R, self.dim], -self.K, self.K))
             R_table = tf.nn.l2_normalize(R_table, 1)
 
-            if self.model == 'TransR':
-                E_table = tf.reshape(E_table, [-1, 1, self.dim])
-                R_table = tf.reshape(R_table, [-1, 1, self.dim])
-            elif self.model == 'ConvKB':
-                E_table = tf.reshape(E_table, [-1, self.dim, 1, 1])
+            if self.model == 'ConvKB':
+                self.E_table = tf.reshape(self.E_table, [-1, self.dim, 1, 1])
                 R_table = tf.reshape(R_table, [-1, self.dim, 1, 1])
-            h_pos = tf.gather(E_table, self.T_pos[:, 0])
-            t_pos = tf.gather(E_table, self.T_pos[:, -1])
-            h_neg = tf.gather(E_table, self.T_neg[:, 0])
-            t_neg = tf.gather(E_table, self.T_neg[:, -1])
+            h_pos = tf.gather(self.E_table, self.T_pos[:, 0])
+            t_pos = tf.gather(self.E_table, self.T_pos[:, -1])
+            h_neg = tf.gather(self.E_table, self.T_neg[:, 0])
+            t_neg = tf.gather(self.E_table, self.T_neg[:, -1])
             r = tf.gather(R_table, self.T_pos[:, 1])
             
-            self.l2_s = [h_pos, t_pos, h_neg, t_neg, r]
-            s_pos, s_neg = self.em_structure(h_pos, t_pos, h_neg, t_neg, r)
-
-        with tf.variable_scope('score'): 
-            self.score_pos, self.score_neg = self.cal_score(s_pos, s_neg)
+            self.l2_kge = [h_pos, t_pos, r, h_neg, t_neg]
+            self.kge_variables()
+            s_pos = self.em_structure(h_pos, r, t_pos, 'pos')
+            score_pos = self.cal_score(s_pos)
+            s_neg = self.em_structure(h_neg, r, t_neg, 'neg')
+            score_neg = self.cal_score(s_neg)
 
         with tf.variable_scope('loss'): 
             if self.model != 'ConvKB':
                 loss = tf.reduce_sum(tf.nn.relu(self.margin + \
-                       self.score_pos - self.score_neg))
+                       score_pos - score_neg))
             else:
-                loss = tf.reduce_sum(tf.nn.softplus(self.score_pos) + \
-                                     tf.nn.softplus(- self.score_neg))
-            l2_loss_s = tf.add_n([tf.nn.l2_loss(v) for v in self.l2_s])
+                loss = tf.reduce_sum(tf.nn.softplus(score_pos) + \
+                                     tf.nn.softplus(- score_neg))
+            loss_kge = tf.add_n([tf.nn.l2_loss(v) for v in self.l2_kge])
             if not self.add_rgcn:
-                self.loss = loss + self.l2 * l2_loss_s
+                self.loss = loss + self.l2 * loss_kge
             else:
-                l2_loss_r = tf.add_n([tf.nn.l2_loss(v) for v in self.l2_r])
-                self.loss = loss + self.l2 * (l2_loss_r + l2_loss_s / 5)
+                loss_rgcn = tf.add_n([tf.nn.l2_loss(v) for v in self.l2_rgcn])
+                self.loss = loss + self.l2 * (loss_rgcn + loss_kge / 5)
             self.train_op = tf.train.AdamOptimizer(self.l_r). \
                             minimize(self.loss)
+                            
+        with tf.variable_scope('link_prediction'): 
+            self.lp_h, self.lp_t = self.cal_lp_score(h_pos, r, t_pos)
 
 
     def get_A(self):
@@ -199,13 +200,13 @@ class KGE():
         s_w = tf.get_variable('self_weight', initializer = \
               tf.random_uniform([self.dim, self.dim], -K, K))
         out = tf.nn.dropout(tf.matmul(self.input, s_w), 0.5 * self.keep + 0.5)
-        self.l2_r = [s_w]
+        self.l2_rgcn = [s_w]
             
-        n_B = 32
+        n_B = 250
         if self.n_R <= n_B:
             r_w = tf.get_variable('relation_weight', initializer = \
                   tf.random_uniform([self.n_R, self.dim, self.dim], -K, K))
-            self.l2_r.append(r_w)
+            self.l2_rgcn.append(r_w)
         else:
             r_c = tf.get_variable('relation_coefficient', initializer = \
                   tf.random_uniform([self.n_R, n_B], -K, K))
@@ -213,7 +214,7 @@ class KGE():
                   tf.random_uniform([n_B, self.dim, self.dim], -K, K))
             r_w = tf.reshape(tf.matmul(r_c, tf.reshape(r_b, [-1, self.dim * \
                   self.dim])), [-1, self.dim, self.dim])
-            self.l2_r.append(r_b)
+            self.l2_rgcn.append(r_b)
         
         for r in range(self.n_R):
             out = tf.nn.dropout(tf.matmul(tf.sparse_tensor_dense_matmul( \
@@ -234,7 +235,7 @@ class KGE():
         """
 
         eps = self.epoches
-        step = eps if self.add_rgcn else 25
+        step = eps if self.add_rgcn else 50
         bps = list(range(eps // step - 1, eps, eps // step))
         print('    EPOCH Trian-LOSS Dev-LOSS  time   Time')  
             
@@ -257,7 +258,7 @@ class KGE():
                 dev_Loss = 0.0
                 for T_pos, T_neg in dev_batches:     
                     feed_dict = {self.T_pos: T_pos, self.T_neg: T_neg,
-                                 self.keep: 1.0}
+                                  self.keep: 1.0}
                     if self.add_rgcn:
                         feed_dict.update(self.feed_dict)
                     loss = sess.run(self.loss, feed_dict)
@@ -267,7 +268,7 @@ class KGE():
                 _t = time.time()
                 print('    {:^5} {:^10.4f} {:^8.4f} {:^6.2f} {:^6.2f}'. \
                       format(ep + 1, train_Loss, dev_Loss, (_t - t1) / 60,
-                             (_t - t0) / 60))
+                              (_t - t0) / 60))
                 t1 = _t
                 
                 if ep == bps[0] or dev_Loss < KPI[-1]:
@@ -292,50 +293,6 @@ class KGE():
             json.dump(result, file) 
 
 
-    def initialize_variables(self, mode):
-        """
-        Initialize and display variables and shapes.
-        
-        Args:
-            mode: 'train' or 'predict'
-        """
-        
-        tvs = collections.OrderedDict()
-        for v in tf.global_variables():
-            name = re.match('^(.*):\\d+$', v.name).group(1)
-            shape = v.shape.as_list()
-            if 'Adam' not in name and 'beta' not in name:
-                tvs[name] = shape
-                
-        if mode == 'train':
-            if not self.add_rgcn:
-                if self.model == 'ConvKB':                
-                    p = '{}TransE/{}_{}'.format(self.data_dir, self.dim,
-                        '1.0' if 'FB' in self.dataset else '1.5')
-                else:
-                    p = None
-            else:
-                p = self.out_dir[: -12]
-        elif mode == 'predict':
-            p = self.out_dir
-        
-        if p:
-            p += '/model.ckpt'
-            ivs = {v[0]: v[0] for v in tf.train.list_variables(p) 
-                   if v[0] in tvs}
-            if self.add_rgcn and mode == 'train':
-                ivs['structure/entity_table'] = 'R-GCN/input_feature'
-            tf.train.init_from_checkpoint(p, ivs)
-        else:
-            ivs = {}
-                                
-        if mode == 'train' or (mode == 'predict' and not self.do_train):
-            for v, shape in tvs.items():
-                print('    {}{} : {}'.format('*' if v in ivs or 'feature' in v
-                      else '-', v, shape))
-            print()
-
-
     def get_batches(self, key):
         """
         Get postive batch triple (T_pos) for training.
@@ -355,7 +312,7 @@ class KGE():
             
         if key == 'train':
             return ((np.vstack([T_pos, T_pos]), np.vstack([self.get_T_neg( \
-                     T_pos), self.get_T_neg(T_pos)])) for T_pos in T_poss) 
+                      T_pos), self.get_T_neg(T_pos)])) for T_pos in T_poss) 
         elif key == 'dev':
             return ((T_pos, self.get_T_neg(T_pos)) for T_pos in T_poss) 
     
@@ -390,7 +347,7 @@ class KGE():
              
         t0 = time.time()
         print('     MR    MRR   @01   @03   @10   TIME\n   ', end = '')
-        out = self.link_prediction(sess, self.test)
+        out = self.link_prediction(sess)
         print(' {:^6.2f}'.format((time.time() - t0) / 60))
         
         with open(self.out_dir + '/result.json') as file: 
@@ -402,35 +359,34 @@ class KGE():
             json.dump(result, file) 
     
     
-    def link_prediction(self, sess, T_pos):   
+    def link_prediction(self, sess):   
         """
         Linking Prediction of knowledge graph embedding.
         Return entity MR, MRR, @1, @3, @10
         
         Args:
             sess: tf.Session
-            T_pos: positive triple to predict
         """
         
-        rank = []
-        for T in T_pos.tolist():      
-            rpc_h = np.array([T for i in range(self.n_E)])
-            rpc_h[:, 0] = range(self.n_E)
-            feed_dict = {self.T_pos: rpc_h, self.keep: 1.0}
-            if self.add_rgcn:
-                feed_dict.update(self.feed_dict)
-            score_h = sess.run(self.score_pos, feed_dict)
-            
-            rpc_t = np.array([T for i in range(self.n_E)])
-            rpc_t[:, 2] = range(self.n_E)
-            feed_dict = {self.T_pos: rpc_t, self.keep: 1.0}
-            if self.add_rgcn:
-                feed_dict.update(self.feed_dict)
-            score_t = sess.run(self.score_pos, feed_dict)
-
-            rank.extend([self.cal_ranks(score_h, T, 0), 
-                         self.cal_ranks(score_t, T, 2)])    
+        if self.model == 'ConvKB':
+            bs = 3
+        else:
+            bs = 50
+        n_batch = self.n_test // bs
+        T_poss = [self.test[i * bs: (i + 1) * bs] for i in range(n_batch)]
+        if self.model != 'ConvKB' and self.n_test % bs != 0:
+            T_poss.append(self.test[n_batch * bs: ])
         
+        rank = []
+        for T_pos in T_poss:
+            feed_dict = {self.T_pos: T_pos, self.keep: 1.0}
+            if self.add_rgcn:
+                feed_dict.update(self.feed_dict)
+            lp_h, lp_t = sess.run([self.lp_h, self.lp_t], feed_dict)
+            for i in range(len(T_pos)):
+                rank.extend([self.cal_ranks(lp_h[i], list(T_pos[i]), 0), 
+                             self.cal_ranks(lp_t[i], list(T_pos[i]), 2)]) 
+            
         MR = round(np.mean(rank), 1)
         MRR = round(np.mean([1 / x for x in rank]), 3)
         top1 = round(np.mean(np.array(rank) == 1), 3)
@@ -465,6 +421,50 @@ class KGE():
                 if tuple(new_T) not in self.pool:
                     out += 1
         return out
+    
+    
+    def initialize_variables(self, mode):
+        """
+        Initialize and display variables and shapes.
+        
+        Args:
+            mode: 'train' or 'predict'
+        """
+        
+        tvs = collections.OrderedDict()
+        for v in tf.global_variables():
+            name = re.match('^(.*):\\d+$', v.name).group(1)
+            shape = v.shape.as_list()
+            if 'Adam' not in name and 'beta' not in name:
+                tvs[name] = shape
+                
+        if mode == 'train':
+            if not self.add_rgcn:
+                if self.model == 'ConvKB':                
+                    p = '{}TransE/{}_{}'.format(self.data_dir, self.dim,
+                        '1.0' if 'FB' in self.dataset else '1.5')
+                else:
+                    p = None
+            else:
+                p = self.out_dir[: -8]
+        elif mode == 'predict':
+            p = self.out_dir
+        
+        if p:
+            p += '/model.ckpt'
+            ivs = {v[0]: v[0] for v in tf.train.list_variables(p) 
+                   if v[0] in tvs}
+            if self.add_rgcn and mode == 'train':
+                ivs['structure/entity_table'] = 'R-GCN/input_feature'
+            tf.train.init_from_checkpoint(p, ivs)
+        else:
+            ivs = {}
+                                
+        if mode == 'train' or (mode == 'predict' and not self.do_train):
+            for v, shape in tvs.items():
+                print('    {}{} : {}'.format('*' if v in ivs or 'feature' in v
+                      else '-', v, shape))
+            print()
     
     
     def run(self, config):
