@@ -85,25 +85,25 @@ python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 32 --dropout 0.4 --l2
 ### WN18RR (40943 E + 11 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 3537.9 | 0.143 | 0.006 | 0.224 | 0.417 |
-| **TransE (R-GCN)** | **3185.4** | 0.156 | 0.009 | 0.248 | 0.437 |
-| **TransH** | 3656.1 | 0.154 | 0.006 | 0.255 | 0.431 |
-| **TransH (R-GCN)** | 3502.1 | 0.156 | 0.010 | 0.252 | 0.437 |
-| **TransD** | 4124.0 | 0.161 | 0.004 | 0.271 | **0.440** |
-| **TransD (R-GCN)** | 4031.7 | **0.165** | 0.006 | **0.286** | 0.436 |
-| **ConvKB** | 3760.2 | 0.149 | 0.019 | 0.220 | 0.412 |
-| **ConvKB (R-GCN)** | 3477.9 | 0.160 | **0.042** | 0.218 | 0.411 |
+| **TransE** | 3945.3 | 0.147 | 0.005 | 0.237 | 0.422 |
+| **TransE (R-GCN)** | 3621.1 | 0.157 | 0.011 | 0.254 | 0.431 |
+| **TransH** | 3860.3 | 0.153 | 0.006 | 0.250 | 0.429 |
+| **TransH (R-GCN)** | 3471.4 | 0.159 | 0.011 | 0.257 | **0.437** |
+| **TransD** | 4941.0 | 0.159 | 0.004 | **0.272** | 0.435 |
+| **TransD (R-GCN)** | 4208.4 | **0.160** | 0.009 | **0.272** | 0.428 |
+| **ConvKB** | 4454.9 | 0.139 | 0.002 | 0.227 | 0.403 |
+| **ConvKB (R-GCN)** | **3446.2** | 0.131 | **0.018** | 0.180 | 0.378 |
 
 
 ```
 python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5
 ```
 ```
-python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --l_r 1e-4 --epoches 100
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 32 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
 ```
