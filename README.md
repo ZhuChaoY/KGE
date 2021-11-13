@@ -36,19 +36,25 @@ python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 8 --l_r 1e-4 --epoch
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
 | **TransE** | 247.7 | 0.223 | 0.106 | 0.277 | 0.444 |
-| **TransE (R-GCN)** | | | | | |
-| **TransH** | **241.2** | 0.230 | 0.116 | 0.283 | 0.444 |
-| **TransH (R-GCN)** | | | | | |
+| **TransE (R-GCN)** | 260.2 | 0.242 | 0.143 | 0.282 | 0.432 |
+| **TransH** | 241.2 | 0.230 | 0.116 | 0.283 | 0.444 |
+| **TransH (R-GCN)** | 273.8 | 0.238 | 0.141 | 0.278 | 0.428 |
 | **TransD** | 291.4 | 0.205 | 0.072 | 0.278 | 0.448 |
-| **TransD (R-GCN)** | | | | | |
+| **TransD (R-GCN)** | 258.7 | 0.231 | 0.120 | 0.282 | 0.438 |
 | **ConvKB** | 253.5 | **0.288** | **0.202** | **0.318** | **0.459** |
-| **ConvKB (R-GCN)** | | | | | |
+| **ConvKB (R-GCN)** | **232.6** | 0.270 | 0.184 | 0.299 | 0.443 |
 
 ```
 python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0
 ```
 ```
+python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
+```
+```
 python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 8 --l_r 1e-4 --epoches 100
+```
+```
+python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 8 --dropout 0.4 --l2 5e-3 --epoches 20 --earlystop 3 --add_rgcn True
 ```
 
 ### WN18 (40943 E + 18 R)
