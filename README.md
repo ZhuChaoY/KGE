@@ -12,7 +12,11 @@ A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE
 (4) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network    
 (5) R-GCN: Modeling Relational Data with Graph Convolutional Networks  
 
-## Results (Filter Setting with embedding dim of 100)      
+## Results 
+(1) Fixed embedding dimension of **100**.  
+(2) Only consider **filter** setting.  
+(3) Early stopped by **Hist@10** reuslt on dev dataset.  
+
 ### FB15k (14951 E + 1345 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
