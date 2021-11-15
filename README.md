@@ -12,7 +12,7 @@ A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE
 (4) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network    
 (5) R-GCN: Modeling Relational Data with Graph Convolutional Networks  
 
-## Results (Filter)      
+## Results (Filter Setting with embedding dim of 100)      
 ### FB15k (14951 E + 1345 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
@@ -48,13 +48,13 @@ python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 16 --l_r 1e-4 --epoc
 python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0
 ```
 ```
-python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
+python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --dropout 0.4 --epoches 20 --add_rgcn True
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 16 --l_r 1e-4 --epoches 100
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 16 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 16 --dropout 0.4 --epoches 20 --add_rgcn True
 ```
 
 ### WN18 (40943 E + 18 R)
@@ -73,13 +73,13 @@ python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 16 --dropout 0.4
 python Run_KGE.py --model TransX --dataset WN18 --margin 1.5
 ```
 ```
-python Run_KGE.py --model TransX --dataset WN18 --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
+python Run_KGE.py --model TransX --dataset WN18 --margin 1.5 --dropout 0.4 --epoches 20 --add_rgcn True
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 16 --l_r 1e-4 --epoches 100
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 16 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 16 --dropout 0.4 --epoches 20 --add_rgcn True
 ```
 
 ### WN18RR (40943 E + 11 R)
@@ -99,11 +99,11 @@ python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 16 --dropout 0.4 --l2
 python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --l_r 1e-2
 ```
 ```
-python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
+python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --dropout 0.4 --epoches 20 --add_rgcn True
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 16 --l_r 1e-4 --epoches 100
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 16 --dropout 0.4 --l2 5e-3 --epoches 20 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 16 --dropout 0.4 --epoches 20 --add_rgcn True
 ```
