@@ -42,46 +42,28 @@ python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 50 --l_r 1e-3 --
 ### WN18 (40943 E + 18 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 230.0 | 0.422 | 0.230 | 0.547 | 0.794 |
-| **TransE (R-GCN)** | | | | | |
-| **TransH** | 204.4 | 0.434 | 0.225 | 0.591 | 0.807 |
-| **TransH (R-GCN)** | | | | | |
-| **ConvKB** | | | | | |
-| **ConvKB (R-GCN)** | | | | | |
+| **TransE** | **290.0** | 0.462 | 0.106 | 0.808 | **0.937** |
+| **TransH** | 302.0 | 0.465 | 0.105 | **0.817** | 0.936 |
+| **ConvKB** | 300.2 | **0.499** | **0.226** | 0.743 | 0.911 |
 
 ```
-python Run_KGE.py --model TransX --dataset WN18 --margin 1.5 --n_neg 4 --l_r 5e-3
+python Run_KGE.py --model TransX --dataset WN18 --margin 4.0 --l_r 5e-3 --batch_size 3000 --epoches 5000
 ```
 ```
-python Run_KGE.py --model TransX --dataset WN18 --margin 1.5 --n_neg 4 --dropout 0.4 --epoches 100 --add_rgcn True
-```
-```
-python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 64 --n_neg 4
-```
-```
-python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 64 --n_neg 4 --dropout 0.4 --epoches 100 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 50 --l_r 1e-3 --batch_size 3000 --epoches 500
 ```
 
 ### WN18RR (40943 E + 11 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 3130.7 | 0.168 | 0.029 | 0.245 | 0.453 |
-| **TransE (R-GCN)** | | | | | |
-| **TransH** | 2862.4 | 0.194 | 0.030 | 0.316 | 0.473 |
-| **TransH (R-GCN)** | | | | | |
-| **ConvKB** | | | | | |
-| **ConvKB (R-GCN)** | | | | | |
+| **TransE** | 3848.1 | 0.185 | 0.012 | 0.319 | 0.471 |
+| **TransH** | **3795.8** | **0.188** | 0.011 | **0.330** | **0.474** |
+| **ConvKB** | 4317.9 | 0.153 | **0.018** | 0.236 | 0.415 |
 
 
 ```
-python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --n_neg 4 --l_r 5e-3
+python Run_KGE.py --model TransX --dataset WN18RR --margin 4.0 --l_r 5e-3 --batch_size 3000 --epoches 5000
 ```
 ```
-python Run_KGE.py --model TransX --dataset WN18RR --margin 1.5 --n_neg 4 --dropout 0.4 --epoches 100 --add_rgcn True
-```
-```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 64 --n_neg 4
-```
-```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 64 --n_neg 4 --dropout 0.4 --epoches 100 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --batch_size 3000 --epoches 500
 ```
