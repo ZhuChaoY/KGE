@@ -1,15 +1,10 @@
-# R-GCN enhanced KGE
-A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE, TransH, ConvKB) by tensorflow.
-
-## Main
-(1) Pre-train KGE models by traditional process.   
-(2) Serve a single layer of R-GCN as the encoder (The pre trained entity embeddings are the input feature of R-GCN), and a KGE model as the docoder, fine-tuning the pre-trained KGE models by few epoches.   
+# KGE
+A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, ConvKB) by tensorflow.  
 
 ## Reference
 (1) TransE: Translating Embeddings for Modeling Multi-relational Data   
 (2) TransH: Knowledge Graph Embedding by Translating on Hyperplanes  
 (3) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network    
-(4) R-GCN: Modeling Relational Data with Graph Convolutional Networks  
 
 ## Results 
 (1) Fixed embedding dimension of **100**.  
@@ -19,47 +14,29 @@ A Framework of R-GCN enhanced Knowledge Graph Embedding Models (Including TransE
 ### FB15k (14951 E + 1345 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 154.1 | 0.395 | 0.258 | 0.476 | 0.644 |
-| **TransE (R-GCN)** | | | | | |
-| **TransH** | 140.1 | 0.410 | 0.275 | 0.491 | 0.657 |
-| **TransH (R-GCN)** | | | | | |
-| **ConvKB** | | | | | |
-| **ConvKB (R-GCN)** | | | | | |
+| **TransE** | 85.0 | 0.575 | 0.446 | 0.667 | 0.790 |
+| **TransH** | 82.6 | 0.580 | 0.452 | 0.670 | 0.793 |
+| **ConvKB** | **79.2** | **0.596** | **0.470** | **0.686** | **0.805** |
 
 ```
-python Run_KGE.py --model TransX --dataset FB15k --margin 1.0 --n_neg 2 --l_r 5e-3
+python Run_KGE.py --model TransX --dataset FB15k --margin 1.0 --l_r 5e-3 --batch_size 10000 --epoches 5000
 ```
 ```
-python Run_KGE.py --model TransX --dataset FB15k --margin 1.0 --n_neg 2 --dropout 0.4 --epoches 100 --add_rgcn True
-```
-```
-python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 64 --n_neg 2
-```
-```
-python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 64 --n_neg 2 --dropout 0.4 --epoches 100 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 50 --l_r 1e-3 --batch_size 10000 --epoches 500
 ```
 
 ### FB15k-237 (14541 E + 237 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 299.8 | 0.249 | 0.152 | 0.287 | 0.441 |
-| **TransE (R-GCN)** | | | | | |
-| **TransH** | 284.8 | 0.262 | 0.167 | 0.299 | 0.449 |
-| **TransH (R-GCN)** | | | | | |
-| **ConvKB** | | | | | |
-| **ConvKB (R-GCN)** | | | | | |
+| **TransE** | 299.3 | 0.312 | 0.225 | 0.347 | 0.482 |
+| **TransH** | 300.0 | 0.318 | 0.230 | 0.355 | 0.488 |
+| **ConvKB** | **251.7** | **0.330** | **0.242** | **0.365** | **0.500** |
 
 ```
-python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --n_neg 2 --l_r 5e-3
+python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --l_r 5e-3 --batch_size 10000 --epoches 5000
 ```
 ```
-python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --n_neg 2 --dropout 0.4 --epoches 100 --add_rgcn True
-```
-```
-python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 64 --n_neg 2
-```
-```
-python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 64 --n_neg 2 --dropout 0.4 --epoches 100 --add_rgcn True
+python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 50 --l_r 1e-3 --batch_size 10000 --epoches 500
 ```
 
 ### WN18 (40943 E + 18 R)
