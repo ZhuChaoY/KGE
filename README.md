@@ -2,9 +2,9 @@
 A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, ConvKB) by tensorflow.  
 
 ## Reference
-(1) TransE: Translating Embeddings for Modeling Multi-relational Data   
-(2) TransH: Knowledge Graph Embedding by Translating on Hyperplanes  
-(3) ConvKB: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network    
+(1) **TransE**: Translating Embeddings for Modeling Multi-relational Data   
+(2) **TransH**: Knowledge Graph Embedding by Translating on Hyperplanes  
+(3) **ConvKB**: A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network    
 
 ## Results 
 (1) Fixed embedding dimension of **100**.  
