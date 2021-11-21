@@ -67,5 +67,5 @@ python Run_KGE.py --model [TransX] --dataset WN18RR --margin 4.0 --l_r 5e-3 --ba
 python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --batch_size 3000 --epoches 500 --earlystop 5
 ```
 
-**[TransX] from {TransE, TransH}
+**[TransX]** from {TransE, TransH}
 
