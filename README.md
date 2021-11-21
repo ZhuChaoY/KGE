@@ -19,7 +19,7 @@ A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, ConvK
 | **ConvKB** | **79.2** | **0.596** | **0.470** | **0.686** | **0.805** |
 
 ```
-python Run_KGE.py --model TransX --dataset FB15k --margin 1.0 --l_r 5e-3 --batch_size 10000 --epoches 5000 --earlystop 2
+python Run_KGE.py --model [TransX] --dataset FB15k --margin 1.0 --l_r 5e-3 --batch_size 10000 --epoches 5000 --earlystop 2
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 50 --l_r 1e-3 --batch_size 10000 --epoches 500 --earlystop 5
@@ -33,7 +33,7 @@ python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 50 --l_r 1e-3 --batc
 | **ConvKB** | **251.7** | **0.330** | **0.242** | **0.365** | **0.500** |
 
 ```
-python Run_KGE.py --model TransX --dataset FB15k-237 --margin 1.0 --l_r 5e-3 --batch_size 10000 --epoches 5000 --earlystop 2
+python Run_KGE.py --model [TransX] --dataset FB15k-237 --margin 1.0 --l_r 5e-3 --batch_size 10000 --epoches 5000 --earlystop 2
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 50 --l_r 1e-3 --batch_size 10000 --epoches 500 --earlystop 5
@@ -47,7 +47,7 @@ python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 50 --l_r 1e-3 --
 | **ConvKB** | 300.2 | **0.499** | **0.226** | 0.743 | 0.911 |
 
 ```
-python Run_KGE.py --model TransX --dataset WN18 --margin 4.0 --l_r 5e-3 --batch_size 3000 --epoches 5000 --earlystop 2
+python Run_KGE.py --model [TransX] --dataset WN18 --margin 4.0 --l_r 5e-3 --batch_size 3000 --epoches 5000 --earlystop 2
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 50 --l_r 1e-3 --batch_size 3000 --epoches 500 --earlystop 5
@@ -60,10 +60,12 @@ python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 50 --l_r 1e-3 --batch
 | **TransH** | **3795.8** | **0.188** | 0.011 | **0.330** | **0.474** |
 | **ConvKB** | 4317.9 | 0.153 | **0.018** | 0.236 | 0.415 |
 
-
 ```
-python Run_KGE.py --model TransX --dataset WN18RR --margin 4.0 --l_r 5e-3 --batch_size 3000 --epoches 5000 --earlystop 2
+python Run_KGE.py --model [TransX] --dataset WN18RR --margin 4.0 --l_r 5e-3 --batch_size 3000 --epoches 5000 --earlystop 2
 ```
 ```
 python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --batch_size 3000 --epoches 500 --earlystop 5
 ```
+
+**[TransX] from {TransE, TransH}
+
