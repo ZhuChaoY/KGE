@@ -354,6 +354,8 @@ class KGE():
                     margin = 4.0
                 elif self.dataset == 'Kinship':
                     margin = 0.1
+                elif self.dataset == 'NELL-995':
+                    margin = 5.0
                 p = '{}TransE/{}_{}/'.format(self.data_dir, self.dim, margin)
             else:
                 p = None
