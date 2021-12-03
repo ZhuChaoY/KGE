@@ -8,8 +8,9 @@ parser = argparse.ArgumentParser(description = 'R-GCN enhanced KGE')
 
 parser.add_argument('--model', type = str, default = 'TransE',
                     help = 'model name') #'TransE', 'TransH', 'ConvKB'
+#'FB15k', 'FB15k-237', 'WN18', 'WN18RR', 'Kinship', 'NELL-995'
 parser.add_argument('--dataset', type = str, default = 'FB15k',
-                    help = 'dataset') #'FB15k', 'FB15k-237', 'WN18', 'WN18RR'
+                    help = 'dataset')  
 parser.add_argument('--dim', type = int, default = 100,
                     help = 'embedding dim')
 parser.add_argument('--margin', type = float, default = None,
@@ -22,7 +23,7 @@ parser.add_argument('--l2', type = float, default = 5e-4,
                     help = 'l2 penalty coefficient')
 parser.add_argument('--l_r', type = float, default = 5e-3, 
                     help = 'learning rate')
-parser.add_argument('--batch_size', type = int, default = 3000,
+parser.add_argument('--batch_size', type = int, default = 10000,
                     help = 'batch size for SGD')
 parser.add_argument('--epoches', type = int, default = 5000,
                     help = 'training epoches')

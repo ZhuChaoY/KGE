@@ -347,9 +347,14 @@ class KGE():
             tvs[name] = shape
                 
         if mode == 'train':
-            if self.model == 'ConvKB':                
-                p = '{}TransE/{}_{}/'.format(self.data_dir, self.dim,
-                    '1.0' if 'FB' in self.dataset else '4.0')
+            if self.model == 'ConvKB':    
+                if 'FB' in self.dataset:
+                    margin = 1.0
+                elif 'WN' in self.dataset:
+                    margin = 4.0
+                elif self.dataset == 'Kinship':
+                    margin = 0.1
+                p = '{}TransE/{}_{}/'.format(self.data_dir, self.dim, margin)
             else:
                 p = None
         elif mode == 'predict':
