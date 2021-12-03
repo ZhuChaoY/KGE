@@ -67,5 +67,19 @@ python Run_KGE.py --model [TransX] --dataset WN18RR --margin 4.0 --l_r 5e-3 --ba
 python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --batch_size 3000 --epoches 500 --earlystop 5
 ```
 
+### Kinship (104 E + 25 R)
+|            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
+|     --     |   --   |    --   |    --    |    --    |    --     |
+| **TransE** | 6.7 | 0.463 | 0.258 | 0.607 | 0.834 |
+| **TransH** | **5.3** | **0.543** | 0.334 | **0.711** | **0.878** |
+| **ConvKB** |  |  |  |  |  |
+
+```
+python Run_KGE.py --model [TransX] --dataset Kinship --margin 0.1 --l_r 5e-3 --batch_size 500 --epoches 5000 --earlystop 2
+```
+```
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --batch_size 500 --epoches 500 --earlystop 5
+```
+
 **[TransX]** from {TransE, TransH}
 
