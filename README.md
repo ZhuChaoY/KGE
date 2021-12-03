@@ -78,7 +78,7 @@ python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --bat
 python Run_KGE.py --model [TransX] --dataset Kinship --margin 0.1 --l_r 5e-3 --batch_size 500 --epoches 5000 --earlystop 2
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --batch_size 500 --epoches 500 --earlystop 5
+python Run_KGE.py --model ConvKB --dataset Kinship --n_filter 50 --l_r 1e-3 --batch_size 500 --epoches 500 --earlystop 5
 ```
 
 **[TransX]** from {TransE, TransH}
