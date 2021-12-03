@@ -224,7 +224,7 @@ class KGE():
         if key == 'train':
             random.shuffle(data)
         else:
-            bs = 200 if self.model != 'ConvKB' else 1
+            bs = 100 if self.model != 'ConvKB' else 1
         n = len(data)
         n_batch = n // bs
         T_poss = [data[i * bs: (i + 1) * bs] for i in range(n_batch)]
