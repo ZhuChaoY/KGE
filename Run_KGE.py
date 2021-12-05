@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description = 'R-GCN enhanced KGE')
 
 parser.add_argument('--model', type = str, default = 'TransE',
                     help = 'model name') #'TransE', 'TransH', 'ConvKB'
-#'FB15k', 'FB15k-237', 'WN18', 'WN18RR', 'Kinship', 'NELL-995'
+#'FB15k', 'FB15k-237', 'WN18', 'WN18RR', 'Kinship', 'NELL-995', 'UMLS'
 parser.add_argument('--dataset', type = str, default = 'FB15k',
                     help = 'dataset')  
 parser.add_argument('--dim', type = int, default = 100,
