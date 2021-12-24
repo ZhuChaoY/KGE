@@ -95,7 +95,7 @@ python Run_KGE.py --model [TransX] --dataset NELL-995 --margin 5.0 --l_r 5e-3 --
 python Run_KGE.py --model ConvKB --dataset NELL-995 --n_filter 50 --l_r 1e-3 --batch_size 5000 --epoches 500 --earlystop 5
 ```
 
-### Kinship (135 E + 46 R)
+### UMLS (135 E + 46 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
 | **TransE** | 1.8 | 0.861 | 0.766 | 0.952 | 0.986 |
