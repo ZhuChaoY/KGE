@@ -1,6 +1,7 @@
 import re
 import time
 import json
+import pickle
 import random
 import collections
 import numpy as np
@@ -95,7 +96,6 @@ class KGE():
             print('    *Margin          : {}'.format(self.margin))
         else:
             print('    *N_filter        : {}'.format(self.n_filter)) 
-        print('    *Negtive samples : {}'.format(self.n_neg))
         print('    *l2 Rate         : {}'.format(self.l2))
         print('    *Learning_Rate   : {}'.format(self.l_r))
         print('    *Batch_Size      : {}'.format(self.batch_size))
@@ -111,9 +111,14 @@ class KGE():
             self.E_table = tf.get_variable('entity_table', initializer = \
                       tf.random_uniform([self.n_E, self.dim], -self.K, self.K))
             self.E_table = tf.nn.l2_normalize(self.E_table, 1)    
-            R_table = tf.get_variable('relation_table', initializer = \
+            if self.model != 'RotatE':
+                R_table = tf.get_variable('relation_table', initializer = \
                       tf.random_uniform([self.n_R, self.dim], -self.K, self.K))
-            R_table = tf.nn.l2_normalize(R_table, 1)
+                R_table = tf.nn.l2_normalize(R_table, 1)
+            else:
+                pi = 3.1415926
+                R_table = tf.get_variable('relation_table', initializer = \
+                          tf.random_uniform([self.n_R, self.dim], -pi, pi))
 
             if self.model == 'ConvKB':
                 self.E_table = tf.reshape(self.E_table, [-1, self.dim, 1, 1])
@@ -122,36 +127,28 @@ class KGE():
             t_pos = tf.gather(self.E_table, self.T_pos[:, -1])
             h_neg = tf.gather(self.E_table, self.T_neg[:, 0])
             t_neg = tf.gather(self.E_table, self.T_neg[:, -1])
-            r_pos = tf.gather(R_table, self.T_pos[:, 1])
-            if self.model != 'ConvKB':
-                r_neg = tf.reshape(tf.tile(tf.expand_dims(r_pos, 1), 
-                        [1, self.n_neg, 1]), [-1, self.dim])
-            else:
-                r_neg = tf.reshape(tf.tile(tf.expand_dims(r_pos, 1), 
-                        [1, self.n_neg, 1, 1, 1]), [-1, self.dim, 1, 1])
+            r = tf.gather(R_table, self.T_pos[:, 1])
             
-            self.l2_kge = [h_pos, t_pos, r_pos, h_neg, t_neg]
+            self.l2_kge = [h_pos, t_pos, r, h_neg, t_neg]
             self.kge_variables()
-            s_pos = self.em_structure(h_pos, r_pos, t_pos, 'pos')
-            score_pos = self.cal_score(s_pos)
-            s_neg = self.em_structure(h_neg, r_neg, t_neg, 'neg')
+            s_pos = self.em_structure(h_pos, r, t_pos, 'pos')
+            self.score_pos = self.cal_score(s_pos)
+            s_neg = self.em_structure(h_neg, r, t_neg, 'neg')
             score_neg = self.cal_score(s_neg)
-            score_neg = tf.reduce_mean(tf.reshape(score_neg,
-                                                  [-1, self.n_neg]), 1)
 
         with tf.variable_scope('loss'): 
             if self.model != 'ConvKB':
                 loss = tf.reduce_sum(tf.nn.relu(self.margin + \
-                       score_pos - score_neg))
+                       self.score_pos - score_neg))
             else:
-                loss = tf.reduce_sum(tf.nn.softplus(score_pos) + \
+                loss = tf.reduce_sum(tf.nn.softplus(self.score_pos) + \
                                      tf.nn.softplus(- score_neg))
             loss_kge = tf.add_n([tf.nn.l2_loss(v) for v in self.l2_kge])
             loss = loss + self.l2 * loss_kge
             self.train_op = tf.train.AdamOptimizer(self.l_r).minimize(loss)
                             
         with tf.variable_scope('link_prediction'): 
-            self.lp_h, self.lp_t = self.cal_lp_score(h_pos, r_pos, t_pos)
+            self.lp_h, self.lp_t = self.cal_lp_score(h_pos, r, t_pos)
 
 
     def em_train(self, sess):  
@@ -222,9 +219,9 @@ class KGE():
         bs = self.batch_size
         data = eval('self.' + key + '.copy()')
         if key == 'train':
-            random.shuffle(data)
+            np.random.shuffle(data)
         else:
-            bs = 100 if self.model != 'ConvKB' else 1
+            bs = 50 if self.model != 'ConvKB' else 1
         n = len(data)
         n_batch = n // bs
         T_poss = [data[i * bs: (i + 1) * bs] for i in range(n_batch)]
@@ -236,7 +233,7 @@ class KGE():
     
     def get_T_neg(self, T_pos):
         """
-        (1) Get n_neg negative triple (T_neg) for training.
+        (1) Get negative triple (T_neg) for training.
         (2) Replace head or tail depends on replace_h_prob.
         
         Args:
@@ -245,13 +242,12 @@ class KGE():
         
         T_negs = []
         for h, r, ta in T_pos.tolist():
-            for i in range(self.n_neg):
-                while True:    
-                    new_e = random.choice(range(self.n_E))
-                    new_T = (new_e, r, ta) if self.rpc_h(r) else (h, r, new_e)
-                    if new_T not in self.pool:
-                        T_negs.append((new_T[0], new_T[2]))
-                        break
+            while True:    
+                new_e = random.choice(range(self.n_E))
+                new_T = (new_e, r, ta) if self.rpc_h(r) else (h, r, new_e)
+                if new_T not in self.pool:
+                    T_negs.append((new_T[0], new_T[2]))
+                    break
         return np.array(T_negs)
 
 
@@ -352,14 +348,14 @@ class KGE():
                     margin = 1.0
                 elif 'WN' in self.dataset:
                     margin = 4.0
-                elif self.dataset == 'Kinship':
-                    margin = 0.1
                 elif self.dataset == 'NELL-995':
                     margin = 5.0
+                elif self.dataset in ['Kinship', 'UMLS']:
+                    margin = 0.1
                 p = '{}TransE/{}_{}/'.format(self.data_dir, self.dim, margin)
             else:
                 p = None
-        elif mode == 'predict':
+        else:
             p = self.out_dir
         
         if p:
@@ -370,11 +366,40 @@ class KGE():
         else:
             ivs = {}
                                 
-        if mode == 'train' or (mode == 'predict' and not self.do_train):
+        if mode == 'train' or (mode != 'train' and not self.do_train):
             for v, shape in tvs.items():
                 print('    {}{} : {}'.format('*' if v in ivs else '-', v,
                                              shape))
             print()
+    
+    
+    def em_evaluate(self, sess):
+        """
+        Cal scores for all possible triplets.
+        
+        Args:
+            sess: tf.Session
+        """
+
+        t0 = time.time()
+        print('>>  Cal scores for {} * {} * {} = {} pairs.'. \
+              format(self.n_E, self.n_R, self.n_E,
+                     self.n_E * self.n_R * self.n_E))
+        S = np.zeros((self.n_E, self.n_E, self.n_R))
+        for h in range(self.n_E):
+            for t in range(self.n_E):
+                if t == h:
+                    S[h, t] = np.array([None for i in range(self.n_R)])
+                else:
+                    T = np.array([[h, r, t] for r in range(self.n_R)])
+                    s = sess.run(self.score_pos, {self.T_pos: T})
+                    for r in range(self.n_R):
+                        if (h, r, t) in self.pool:
+                            s[r] = None
+                    S[h, t] = s
+        with open(self.out_dir + 'score.data', 'wb') as file:
+            pickle.dump(S, file) 
+        print('    {:.2f} min.'.format((time.time() - t0) / 60)) 
     
     
     def run(self, config):
@@ -384,18 +409,11 @@ class KGE():
         Args:
             config: tf.ConfigProto
         """
-        
-        if self.do_train:
-            print('\n>>  Training Process.')
-            self.initialize_variables('train')        
-            with tf.Session(config = config) as sess:
-                tf.global_variables_initializer().run()   
-                self.em_train(sess)
-                
-        if self.do_predict:
-            print('\n>>  Predict Process.')
-            self.initialize_variables('predict')   
-            with tf.Session(config = config) as sess:
-                tf.global_variables_initializer().run()  
-                self.em_predict(sess)
-                
+                        
+        for mode in ['train', 'predict', 'evaluate']:
+            if eval('self.do_' + mode):
+                print('\n>>  {} Process.'.format(mode.title()))
+                self.initialize_variables(mode)        
+                with tf.Session(config = config) as _:
+                    tf.global_variables_initializer().run()   
+                    exec('self.em_' + mode + '(_)')
