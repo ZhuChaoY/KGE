@@ -1,10 +1,11 @@
 # KGE
-A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, ConvKB) by tensorflow.  
+A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, ConvKB, RotatE) by tensorflow.  
 
 ## Reference
 (1) **TransE**: [Translating Embeddings for Modeling Multi-relational Data](https://www.cs.sjtu.edu.cn/~li-fang/deeplearning-for-modeling-multi-relational-data.pdf)   
 (2) **TransH**: [Knowledge Graph Embedding by Translating on Hyperplanes](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.486.2800&rep=rep1&type=pdf)   
 (3) **ConvKB**: [A Novel Embedding Model for Knowledge Base Completion Based on Convolutional Neural Network](https://arxiv.org/pdf/1712.02121.pdf)   
+(4) **RotatE**: [ROTATE: KNOWLEDGE GRAPH EMBEDDING BY RELATIONAL ROTATION IN COMPLEX SPACE](https://arxiv.org/pdf/1902.10197.pdf) 
 
 ## Results 
 (1) Fixed embedding dimension of **100**.  
@@ -14,9 +15,10 @@ A Framework of Knowledge Graph Embedding Models (Including TransE, TransH, ConvK
 ### FB15k (14951 E + 1345 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 85.0 | 0.575 | 0.446 | 0.667 | 0.790 |
-| **TransH** | 82.6 | 0.580 | 0.452 | 0.670 | 0.793 |
-| **ConvKB** | **79.2** | **0.596** | **0.470** | **0.686** | **0.805** |
+| **TransE** | 77.4 | 0.599 | 0.466 | 0.696 | 0.817 |
+| **TransH** | 77.1 | 0.606 | 0.474 | 0.705 | 0.820 |
+| **ConvKB** | **72.0** | **0.618** | **0.492** | **0.712** | **0.825** |
+| **RotatE** | 82.5 | 0.380 | 0.202 | 0.502 | 0.676 |
 
 ```
 python Run_KGE.py --model [TransX] --dataset FB15k --margin 1.0 --l_r 5e-3 --batch_size 10000 --epoches 5000 --earlystop 2
@@ -24,13 +26,17 @@ python Run_KGE.py --model [TransX] --dataset FB15k --margin 1.0 --l_r 5e-3 --bat
 ```
 python Run_KGE.py --model ConvKB --dataset FB15k --n_filter 50 --l_r 1e-3 --batch_size 10000 --epoches 500 --earlystop 5
 ```
+```
+python Run_KGE.py --model RotatE --dataset FB15k --margin 7.0 --l_r 5e-3 --batch_size 10000 --epoches 2000 --earlystop 2
+```
 
 ### FB15k-237 (14541 E + 237 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 299.3 | 0.312 | 0.225 | 0.347 | 0.482 |
-| **TransH** | 300.0 | 0.318 | 0.230 | 0.355 | 0.488 |
-| **ConvKB** | **251.7** | **0.330** | **0.242** | **0.365** | **0.500** |
+| **TransE** | 294.0 | 0.314 | 0.224 | 0.351 | 0.489 |
+| **TransH** | 286.0 | 0.326 | 0.238 | 0.363 | 0.497 |
+| **ConvKB** | 253.2 | **0.334** | **0.245** | **0.371** | **0.509** |
+| **RotatE** | **232.4** | 0.277 | 0.184 | 0.314 | 0.461 |
 
 ```
 python Run_KGE.py --model [TransX] --dataset FB15k-237 --margin 1.0 --l_r 5e-3 --batch_size 10000 --epoches 5000 --earlystop 2
@@ -38,41 +44,53 @@ python Run_KGE.py --model [TransX] --dataset FB15k-237 --margin 1.0 --l_r 5e-3 -
 ```
 python Run_KGE.py --model ConvKB --dataset FB15k-237 --n_filter 50 --l_r 1e-3 --batch_size 10000 --epoches 500 --earlystop 5
 ```
+```
+python Run_KGE.py --model RotatE --dataset FB15k-237 --margin 8.0 --l_r 5e-3 --batch_size 10000 --epoches 2000 --earlystop 2
+```
 
 ### WN18 (40943 E + 18 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | **290.0** | 0.462 | 0.106 | 0.808 | **0.937** |
-| **TransH** | 302.0 | 0.465 | 0.105 | **0.817** | 0.936 |
-| **ConvKB** | 300.2 | **0.499** | **0.226** | 0.743 | 0.911 |
+| **TransE** | 302.9 | 0.496 | 0.123 | 0.870 | 0.952 |
+| **TransH** | 289.0 | 0.495 | 0.115 | 0.879 | **0.953** |
+| **ConvKB** | 322.1 | 0.537 | 0.248 | 0.814 | 0.939 |
+| **RotatE** | **193.7** | **0.917** | **0.900** | **0.928** | 0.946 |
 
 ```
-python Run_KGE.py --model [TransX] --dataset WN18 --margin 4.0 --l_r 5e-3 --batch_size 3000 --epoches 5000 --earlystop 2
+python Run_KGE.py --model [TransX] --dataset WN18 --margin 4.0 --l_r 5e-3 --batch_size 5000 --epoches 5000 --earlystop 2
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 50 --l_r 1e-3 --batch_size 3000 --epoches 500 --earlystop 5
+python Run_KGE.py --model ConvKB --dataset WN18 --n_filter 50 --l_r 1e-3 --batch_size 5000 --epoches 500 --earlystop 5
+```
+```
+python Run_KGE.py --model RotatE --dataset WN18 --margin 15.0 --l_r 5e-3 --batch_size 5000 --epoches 2000 --earlystop 2
 ```
 
 ### WN18RR (40943 E + 11 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 3848.1 | 0.185 | 0.012 | 0.319 | 0.471 |
-| **TransH** | **3795.8** | **0.188** | 0.011 | **0.330** | **0.474** |
-| **ConvKB** | 4317.9 | 0.153 | **0.018** | 0.236 | 0.415 |
+| **TransE** | 3896.3 | 0.195 | 0.012 | 0.348 | 0.481 |
+| **TransH** | 4033.7 | 0.195 | 0.011 | 0.346 | 0.476 |
+| **ConvKB** | 4460.6 | 0.186 | 0.014 | 0.328 | 0.462 |
+| **RotatE** | **3710.2** | **0.467** | **0.434** | **0.476** | **0.527** |
 
 ```
-python Run_KGE.py --model [TransX] --dataset WN18RR --margin 4.0 --l_r 5e-3 --batch_size 3000 --epoches 5000 --earlystop 2
+python Run_KGE.py --model [TransX] --dataset WN18RR --margin 4.0 --l_r 5e-3 --batch_size 5000 --epoches 5000 --earlystop 2
 ```
 ```
-python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --batch_size 3000 --epoches 500 --earlystop 5
+python Run_KGE.py --model ConvKB --dataset WN18RR --n_filter 50 --l_r 1e-3 --batch_size 5000 --epoches 500 --earlystop 5
+```
+```
+python Run_KGE.py --model RotatE --dataset WN18RR --margin 15.0 --l_r 5e-3 --batch_size 5000 --epoches 2000 --earlystop 2
 ```
 
 ### Kinship (104 E + 25 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 6.7 | 0.463 | 0.258 | 0.607 | 0.834 |
-| **TransH** | 5.3 | 0.543 | 0.334 | 0.711 | 0.878 |
-| **ConvKB** | **3.4** | **0.690** | **0.557** | **0.786** | **0.936** |
+| **TransE** | 6.5 | 0.452 | 0.230 | 0.611 | 0.846 |
+| **TransH** | 5.0 | 0.530 | 0.321 | 0.684 | 0.901 |
+| **ConvKB** | 3.3 | 0.717 | 0.594 | 0.804 | 0.939 |
+| **RotatE** | **2.0** | **0.888** | **0.831** | **0.936** | **0.980** |
 
 ```
 python Run_KGE.py --model [TransX] --dataset Kinship --margin 0.1 --l_r 5e-3 --batch_size 500 --epoches 5000 --earlystop 2
@@ -80,27 +98,17 @@ python Run_KGE.py --model [TransX] --dataset Kinship --margin 0.1 --l_r 5e-3 --b
 ```
 python Run_KGE.py --model ConvKB --dataset Kinship --n_filter 50 --l_r 1e-3 --batch_size 500 --epoches 500 --earlystop 5
 ```
-
-### NELL-995 (75492 E + 200 R)
-|            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
-|     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | **6217.5** | 0.351 | 0.277 | 0.394 | 0.477 |
-| **TransH** | 6271.8 | **0.362** | **0.291** | **0.404** | **0.491** |
-| **ConvKB** | 7733.1 | 0.295 | 0.241 | 0.324 | 0.384 |
-
 ```
-python Run_KGE.py --model [TransX] --dataset NELL-995 --margin 5.0 --l_r 5e-3 --batch_size 5000 --epoches 5000 --earlystop 2
-```
-```
-python Run_KGE.py --model ConvKB --dataset NELL-995 --n_filter 50 --l_r 1e-3 --batch_size 5000 --epoches 500 --earlystop 5
+python Run_KGE.py --model RotatE --dataset Kinship --margin 3.0 --l_r 5e-3 --batch_size 500 --epoches 2000 --earlystop 2
 ```
 
 ### UMLS (135 E + 46 R)
 |            | **MR** | **MRR** |**Hist@1**|**Hist@3**|**Hist@10**|
 |     --     |   --   |    --   |    --    |    --    |    --     |
-| **TransE** | 1.8 | 0.861 | 0.766 | 0.952 | 0.986 |
-| **TransH** | 1.6 | 0.854 | 0.750 | 0.950 | 0.987 |
-| **ConvKB** | **1.5** | **0.881** | **0.781** | **0.979** | **0.991** |
+| **TransE** | 1.6 | 0.859 | 0.764 | 0.947 | 0.989 |
+| **TransH** | 1.6 | 0.862 | 0.766 | 0.954 | 0.990 |
+| **ConvKB** | **1.3** | 0.918 | 0.849 | 0.987 | 0.994 |
+| **RotatE** | **1.3** | **0.952** | **0.914** | **0.990** | **0.996** |
 
 ```
 python Run_KGE.py --model [TransX] --dataset UMLS --margin 0.1 --l_r 5e-3 --batch_size 500 --epoches 5000 --earlystop 2
@@ -108,6 +116,8 @@ python Run_KGE.py --model [TransX] --dataset UMLS --margin 0.1 --l_r 5e-3 --batc
 ```
 python Run_KGE.py --model ConvKB --dataset UMLS --n_filter 50 --l_r 1e-3 --batch_size 500 --epoches 500 --earlystop 5
 ```
+```
+python Run_KGE.py --model RotatE --dataset UMLS --margin 4.0 --l_r 5e-3 --batch_size 500 --epoches 2000 --earlystop 2
+```
 
-**[TransX]** from {TransE, TransH}
-
+**[TransX]** from {TransE, TransH}  
